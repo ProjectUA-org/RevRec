@@ -4,7 +4,7 @@
 // a Stripe customer.
 //
 // Usage:
-//   STRIPE_SECRET_KEY=sk_test_... node scripts/seed-stripe-test-data.mjs
+//   STRIPE_SECRET_KEY=sk_test_... npm run seed:stripe
 
 import Stripe from 'stripe'
 
@@ -18,7 +18,10 @@ if (!secretKey.startsWith('sk_test_')) {
   process.exit(1)
 }
 
-const stripe = new Stripe(secretKey)
+// Use the fetch-based HTTP client (routed through HTTPS_PROXY via NODE_USE_ENV_PROXY,
+// set in the npm script below) instead of Stripe's default Node http client, which
+// bypasses HTTPS_PROXY and can't reach Stripe from behind a proxying network egress.
+const stripe = new Stripe(secretKey, { httpClient: Stripe.createFetchHttpClient() })
 
 // Mirrors CONTRACTS in src/data/mockReconciliation.ts. Ridgeline Freight is seeded
 // below its $12,500 contract price on purpose (produces a "mismatch"); Thistle & Vine

@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "seed:stripe": "node scripts/seed-stripe-test-data.mjs"
+    "seed:stripe": "NODE_USE_ENV_PROXY=1 node scripts/seed-stripe-test-data.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",
