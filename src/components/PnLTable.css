@@ -30,3 +30,33 @@
 .pnl-table__margin td:first-child {
   font-style: normal;
 }
+
+.pnl-table__row-toggle {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pnl-table__chevron {
+  display: inline-block;
+  color: var(--text-muted);
+  transition: transform 0.15s ease;
+}
+
+.pnl-table__chevron--open {
+  transform: rotate(90deg);
+}
+
+.pnl-table__chart-cell {
+  background: var(--surface-muted);
+  white-space: normal;
+}

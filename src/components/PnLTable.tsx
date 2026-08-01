@@ -1,5 +1,7 @@
+import { useId, useState } from 'react'
 import type { MonthlyPnL } from '../types/pnl'
 import { formatCurrency, formatMarginPercent, formatMonth } from '../utils/format'
+import { MonthOverMonthChart } from './MonthOverMonthChart'
 import './Table.css'
 import './PnLTable.css'
 
@@ -51,6 +53,9 @@ function sumAcross(rows: MonthlyPnL[], values: (row: MonthlyPnL) => number): num
 }
 
 export function PnLTable({ rows }: { rows: MonthlyPnL[] }) {
+  const [showOperatingIncomeChart, setShowOperatingIncomeChart] = useState(false)
+  const operatingIncomeChartId = useId()
+
   const renderLineRow = (line: Line, key: string) => (
     <tr key={key} className={line.kind === 'highlight' ? 'pnl-table__highlight' : undefined}>
       <td>{line.label}</td>
@@ -131,7 +136,23 @@ export function PnLTable({ rows }: { rows: MonthlyPnL[] }) {
           {renderSection(OPERATING_EXPENSE_SECTION)}
 
           <tr className="pnl-table__subtotal pnl-table__subtotal--emphasis">
-            <td>Operating income</td>
+            <td>
+              <button
+                type="button"
+                className="pnl-table__row-toggle"
+                aria-expanded={showOperatingIncomeChart}
+                aria-controls={operatingIncomeChartId}
+                onClick={() => setShowOperatingIncomeChart((open) => !open)}
+              >
+                <span
+                  className={`pnl-table__chevron ${showOperatingIncomeChart ? 'pnl-table__chevron--open' : ''}`}
+                  aria-hidden="true"
+                >
+                  ▸
+                </span>
+                Operating income
+              </button>
+            </td>
             {rows.map((row) => (
               <td key={row.month} className="numeric">
                 {formatCurrency(row.operatingIncome)}
@@ -139,6 +160,13 @@ export function PnLTable({ rows }: { rows: MonthlyPnL[] }) {
             ))}
             <td className="numeric">{formatCurrency(operatingIncomeTotal)}</td>
           </tr>
+          {showOperatingIncomeChart && (
+            <tr id={operatingIncomeChartId}>
+              <td colSpan={rows.length + 2} className="pnl-table__chart-cell">
+                <MonthOverMonthChart data={rows.map((row) => ({ month: row.month, value: row.operatingIncome }))} />
+              </td>
+            </tr>
+          )}
           <tr className="pnl-table__margin">
             <td>Operating margin %</td>
             {rows.map((row) => (
