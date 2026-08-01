@@ -1,0 +1,26 @@
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  min-width: 180px;
+  flex: 1;
+}
+
+.summary-card__label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.summary-card__value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.summary-card__hint {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}

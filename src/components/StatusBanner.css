@@ -1,0 +1,65 @@
+.status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--status-matched);
+  border-radius: 10px;
+  padding: 14px 20px;
+}
+
+.status-banner--mismatch {
+  border-left-color: var(--status-mismatch);
+}
+
+.status-banner--gap {
+  border-left-color: var(--status-gap);
+}
+
+.status-banner__title {
+  font-weight: 600;
+}
+
+.status-banner__subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.status-banner__counts {
+  display: flex;
+  gap: 24px;
+}
+
+.status-banner__count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+
+.status-banner__count-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.status-banner__count-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-banner__count--matched .status-banner__count-value {
+  color: var(--status-matched);
+}
+
+.status-banner__count--mismatch .status-banner__count-value {
+  color: var(--status-mismatch);
+}
+
+.status-banner__count--gap .status-banner__count-value {
+  color: var(--status-gap);
+}

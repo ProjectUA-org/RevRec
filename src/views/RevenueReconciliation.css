@@ -1,0 +1,27 @@
+.reconciliation h1 {
+  font-size: 1.4rem;
+  margin: 0 0 20px;
+}
+
+.reconciliation h2 {
+  font-size: 1.05rem;
+  margin: 0 0 12px;
+}
+
+.reconciliation__cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.reconciliation__banners {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.reconciliation__section {
+  margin-bottom: 28px;
+}

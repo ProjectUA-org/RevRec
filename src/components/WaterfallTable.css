@@ -1,0 +1,17 @@
+@import './Table.css';
+
+.variance {
+  font-weight: 600;
+}
+
+.variance--matched {
+  color: var(--status-matched);
+}
+
+.variance--mismatch {
+  color: var(--status-mismatch);
+}
+
+.variance--gap {
+  color: var(--status-gap);
+}
