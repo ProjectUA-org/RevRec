@@ -24,3 +24,7 @@ fetch subscriptions from the test site, matches them to `CONTRACTS` by customer 
 contract's Layer 1 status (`matched` / `mismatch` / `gap`, based on a 5% price tolerance) plus each
 month's live billing-platform new-MRR total. Requires `STRIPE_SECRET_KEY` to be set — see `.env.example`.
 Run locally with `vercel dev` (`npm i -g vercel`) to serve `/api/subscriptions` alongside the Vite app.
+
+To populate the Stripe test account with customers/subscriptions matching `CONTRACTS`, run
+`STRIPE_SECRET_KEY=sk_test_... npm run seed:stripe` from an environment that can reach the Stripe API.
+It refuses to run against a non-test key and is safe to re-run (skips emails that already have a customer).
