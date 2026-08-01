@@ -1,0 +1,32 @@
+.pnl-table__section td {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.pnl-table__highlight td {
+  background: var(--info-bg);
+}
+
+.pnl-table__subtotal td {
+  font-weight: 600;
+  border-top: 1px solid var(--border);
+}
+
+.pnl-table__subtotal--emphasis td {
+  background: var(--surface-muted);
+  font-size: 0.98rem;
+}
+
+.pnl-table__margin td {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+}
+
+.pnl-table__margin td:first-child {
+  font-style: normal;
+}

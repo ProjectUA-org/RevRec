@@ -1,0 +1,19 @@
+.pnl h1 {
+  font-size: 1.4rem;
+  margin: 0 0 20px;
+}
+
+.pnl__cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.pnl > .callout {
+  margin-bottom: 24px;
+}
+
+.pnl__section {
+  margin-bottom: 28px;
+}
