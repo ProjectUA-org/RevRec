@@ -4,19 +4,19 @@ export const MONTHS = ['2026-06', '2026-07', '2026-08']
 
 export const CONTRACTS: Contract[] = [
   // 2026-06
-  { id: 'c01', company: 'Harborline Media', package: 'Growth', month: '2026-06', contractMRR: 3800, billingPlatformMRR: 3800 },
-  { id: 'c02', company: 'Vesper Analytics', package: 'Enterprise', month: '2026-06', contractMRR: 8200, billingPlatformMRR: 8200 },
+  { id: 'c01', company: 'Harborline Media', customerEmail: 'billing@harborlinemedia.com', package: 'Growth', month: '2026-06', contractMRR: 3800, billingPlatformMRR: 3800 },
+  { id: 'c02', company: 'Vesper Analytics', customerEmail: 'billing@vesperanalytics.com', package: 'Enterprise', month: '2026-06', contractMRR: 8200, billingPlatformMRR: 8200 },
 
   // 2026-07
-  { id: 'c03', company: 'Coral Peak Outfitters', package: 'Starter', month: '2026-07', contractMRR: 1150, billingPlatformMRR: 1150 },
+  { id: 'c03', company: 'Coral Peak Outfitters', customerEmail: 'billing@coralpeakoutfitters.com', package: 'Starter', month: '2026-07', contractMRR: 1150, billingPlatformMRR: 1150 },
   // Deliberate mismatch: signed at $12,500/mo, billing platform only reflects $9,800/mo.
-  { id: 'c04', company: 'Ridgeline Freight', package: 'Scale', month: '2026-07', contractMRR: 12500, billingPlatformMRR: 9800 },
+  { id: 'c04', company: 'Ridgeline Freight', customerEmail: 'billing@ridgelinefreight.com', package: 'Scale', month: '2026-07', contractMRR: 12500, billingPlatformMRR: 9800 },
   // Deliberate gap: signed but never set up in the billing platform.
-  { id: 'c05', company: 'Thistle & Vine Co.', package: 'Growth', month: '2026-07', contractMRR: 2950, billingPlatformMRR: null },
+  { id: 'c05', company: 'Thistle & Vine Co.', customerEmail: 'billing@thistleandvine.com', package: 'Growth', month: '2026-07', contractMRR: 2950, billingPlatformMRR: null },
 
   // 2026-08
-  { id: 'c06', company: 'Northstar Biotech', package: 'Enterprise', month: '2026-08', contractMRR: 7600, billingPlatformMRR: 7600 },
-  { id: 'c07', company: 'Milltown Hardware', package: 'Starter', month: '2026-08', contractMRR: 990, billingPlatformMRR: 990 },
+  { id: 'c06', company: 'Northstar Biotech', customerEmail: 'billing@northstarbiotech.com', package: 'Enterprise', month: '2026-08', contractMRR: 7600, billingPlatformMRR: 7600 },
+  { id: 'c07', company: 'Milltown Hardware', customerEmail: 'billing@milltownhardware.com', package: 'Starter', month: '2026-08', contractMRR: 990, billingPlatformMRR: 990 },
 ]
 
 // Recognized revenue as a fraction of that month's billing-platform MRR — hand-tuned
