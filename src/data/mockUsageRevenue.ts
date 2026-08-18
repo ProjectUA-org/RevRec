@@ -230,83 +230,44 @@ export function computeKpis(): UsageRevenueKpis {
   }
 }
 
-export interface RollforwardRow {
-  label: string
-  amount: number
-  isTotal?: boolean
+export interface ClientBalance {
+  customerId: string
+  walletBalance: number | null
+  accountsReceivable: number
+  needsAttention: boolean
+  attentionReason?: string
 }
 
-export function computeRollforward(): RollforwardRow[] {
-  const creditsSold = WALLET_LOTS.filter((lot) => lot.source === 'purchase' && isAugust(lot.issueDate)).reduce(
-    (sum, lot) => sum + lot.originalCredits,
-    0,
-  )
-  const promotionalGrants = WALLET_LOTS.filter(
-    (lot) => lot.source === 'promotional' && isAugust(lot.issueDate),
-  ).reduce((sum, lot) => sum + lot.originalCredits, 0)
-  const revenueRecognized = USAGE_EVENTS.filter((e) => e.walletLotId && isAugust(e.timestamp)).reduce(
-    (sum, e) => sum + e.revenueRecognized,
-    0,
-  )
-  const refunds = BILLING_EVENTS.filter((b) => b.kind === 'refund' && isAugust(b.date)).reduce(
-    (sum, b) => sum + b.amount,
-    0,
-  )
-  const remittance = WALLET_LOTS.filter(
-    (lot) => lot.remittanceAmount && lot.remittanceDate && isAugust(lot.remittanceDate),
-  ).reduce((sum, lot) => sum + (lot.remittanceAmount ?? 0), 0)
-  const breakage = WALLET_LOTS.filter(
-    (lot) => lot.breakageAmount && lot.breakageDate && isAugust(lot.breakageDate),
-  ).reduce((sum, lot) => sum + (lot.breakageAmount ?? 0), 0)
+export function computeClientBalances(): ClientBalance[] {
+  return CUSTOMERS.map((customer) => {
+    const lots = WALLET_LOTS.filter((lot) => lot.customerId === customer.id)
+    const walletBalance = customer.contractType === 'payg' ? null : lots.reduce((sum, lot) => sum + lot.remainingCredits, 0)
 
-  const ending = WALLET_LOTS.reduce((sum, lot) => sum + lot.remainingCredits, 0)
-  const beginning = ending - creditsSold - promotionalGrants + revenueRecognized + refunds + remittance + breakage
+    const accountsReceivable =
+      BILLING_EVENTS.filter((b) => b.customerId === customer.id && b.kind === 'invoice-credit-sale').reduce(
+        (sum, b) => sum + b.amount,
+        0,
+      ) +
+      USAGE_EVENTS.filter((e) => e.customerId === customer.id && e.walletLotId === null).reduce(
+        (sum, e) => sum + e.revenueRecognized,
+        0,
+      ) -
+      BILLING_EVENTS.filter((b) => b.customerId === customer.id && b.kind === 'collection').reduce(
+        (sum, b) => sum + b.amount,
+        0,
+      )
 
-  return [
-    { label: 'Beginning contract liability (Aug 1)', amount: beginning },
-    { label: 'Credits sold', amount: creditsSold },
-    { label: 'Promotional credits granted', amount: promotionalGrants },
-    { label: 'Revenue recognized', amount: -revenueRecognized },
-    { label: 'Refunds', amount: -refunds },
-    { label: 'Reclassified to remittance liability', amount: -remittance },
-    { label: 'Breakage', amount: -breakage },
-    { label: 'Ending contract liability', amount: ending, isTotal: true },
-  ]
-}
+    const openException = ACCOUNTING_EXCEPTIONS.find((ex) => ex.customerId === customer.id && ex.status !== 'resolved')
+    const expiringLot = lots.find((lot) => lot.status === 'expiring-soon')
+    const needsAttention = Boolean(openException) || Boolean(expiringLot)
+    const attentionReason = openException
+      ? openException.type
+      : expiringLot
+        ? `Lot ${expiringLot.id} expiring soon`
+        : undefined
 
-export interface WaterfallStage {
-  label: string
-  amount: number
-  caption: string
-}
-
-export function computeWaterfall(): WaterfallStage[] {
-  const cashOrArPrepaid = WALLET_LOTS.filter((lot) => lot.source === 'purchase').reduce(
-    (sum, lot) => sum + lot.originalCredits,
-    0,
-  )
-  const creditsIssued = WALLET_LOTS.reduce((sum, lot) => sum + lot.originalCredits, 0)
-  const usageConsumed = WALLET_LOTS.reduce(
-    (sum, lot) =>
-      sum + (lot.originalCredits - lot.remainingCredits - (lot.breakageAmount ?? 0) - (lot.remittanceAmount ?? 0)),
-    0,
-  )
-  const refundTotal = BILLING_EVENTS.filter((b) => b.kind === 'refund').reduce((sum, b) => sum + b.amount, 0)
-  const remittanceTotal = WALLET_LOTS.reduce((sum, lot) => sum + (lot.remittanceAmount ?? 0), 0)
-  const breakageTotal = WALLET_LOTS.reduce((sum, lot) => sum + (lot.breakageAmount ?? 0), 0)
-  const remainingLiability = WALLET_LOTS.reduce((sum, lot) => sum + lot.remainingCredits, 0)
-
-  return [
-    { label: 'Customer prepays cash / AR', amount: cashOrArPrepaid, caption: 'Cash or invoiced receivable for prepaid credit purchases' },
-    { label: 'Credits issued to wallet', amount: creditsIssued, caption: '+ promotional & rollover credits added' },
-    { label: 'Usage events received', amount: usageConsumed, caption: 'Metered consumption against wallet balances' },
-    { label: 'Revenue recognized', amount: usageConsumed, caption: 'Usage satisfies the performance obligation 1:1' },
-    {
-      label: 'Remaining contract liability',
-      amount: remainingLiability,
-      caption: `Net of $${refundTotal.toLocaleString()} refunds, $${remittanceTotal.toLocaleString()} remitted & $${breakageTotal.toLocaleString()} breakage`,
-    },
-  ]
+    return { customerId: customer.id, walletBalance, accountsReceivable, needsAttention, attentionReason }
+  })
 }
 
 export function buildJournalEntries(): JournalEntry[] {

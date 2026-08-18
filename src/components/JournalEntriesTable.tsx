@@ -16,6 +16,15 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
   return (
     <div className="table-card">
       <table className="journal-entries-table">
+        <colgroup>
+          <col style={{ width: '110px' }} />
+          <col style={{ width: '130px' }} />
+          <col style={{ width: '200px' }} />
+          <col style={{ width: '175px' }} />
+          <col style={{ width: '175px' }} />
+          <col style={{ width: '110px' }} />
+          <col style={{ width: '156px' }} />
+        </colgroup>
         <thead>
           <tr>
             <th>Date</th>

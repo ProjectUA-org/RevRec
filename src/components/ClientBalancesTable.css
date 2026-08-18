@@ -1,0 +1,71 @@
+@import './Table.css';
+
+table.client-balances-table {
+  table-layout: fixed;
+}
+
+.client-balances-table__contract-id {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.client-balances-table__row {
+  cursor: pointer;
+}
+
+.client-balances-table__chevron {
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.client-balances-table__detail-row > td {
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.client-balances-table__detail {
+  padding: 18px 20px;
+  background: var(--surface-muted);
+  animation: client-balances-detail-in 0.15s ease-out;
+}
+
+@keyframes client-balances-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.client-balances-table__detail h4 {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.client-balances-table__detail h4:not(:first-child) {
+  margin-top: 20px;
+}
+
+.client-balances-table__attention {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--status-gap-bg);
+  color: var(--status-gap);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.client-balances-table__muted {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin: 0;
+}

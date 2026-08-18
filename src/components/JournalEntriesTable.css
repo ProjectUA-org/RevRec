@@ -4,41 +4,6 @@
   table-layout: fixed;
 }
 
-.journal-entries-table th:nth-child(1),
-.journal-entries-table td:nth-child(1) {
-  width: 11%;
-}
-
-.journal-entries-table th:nth-child(2),
-.journal-entries-table td:nth-child(2) {
-  width: 12%;
-}
-
-.journal-entries-table th:nth-child(3),
-.journal-entries-table td:nth-child(3) {
-  width: 28%;
-}
-
-.journal-entries-table th:nth-child(4),
-.journal-entries-table td:nth-child(4) {
-  width: 15%;
-}
-
-.journal-entries-table th:nth-child(5),
-.journal-entries-table td:nth-child(5) {
-  width: 15%;
-}
-
-.journal-entries-table th:nth-child(6),
-.journal-entries-table td:nth-child(6) {
-  width: 9%;
-}
-
-.journal-entries-table th:nth-child(7),
-.journal-entries-table td:nth-child(7) {
-  width: 10%;
-}
-
 .journal-entries-table__row {
   cursor: pointer;
 }
@@ -75,7 +40,7 @@
   border-color: var(--text-muted);
 }
 
-.journal-entries-table__detail-row td {
+.journal-entries-table__detail-row > td {
   padding: 0;
   border-bottom: 1px solid var(--border);
 }

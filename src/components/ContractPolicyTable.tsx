@@ -13,6 +13,15 @@ export function ContractPolicyTable({ customers }: { customers: Customer[] }) {
   return (
     <div className="table-card">
       <table className="contract-policy-table">
+        <colgroup>
+          <col style={{ width: '160px' }} />
+          <col style={{ width: '195px' }} />
+          <col style={{ width: '135px' }} />
+          <col style={{ width: '125px' }} />
+          <col style={{ width: '245px' }} />
+          <col style={{ width: '115px' }} />
+          <col style={{ width: '123px' }} />
+        </colgroup>
         <thead>
           <tr>
             <th>Customer</th>

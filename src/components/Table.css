@@ -17,6 +17,9 @@
   text-align: left;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .table-card th {
@@ -25,6 +28,7 @@
   text-transform: uppercase;
   letter-spacing: 0.03em;
   font-weight: 600;
+  white-space: normal;
 }
 
 .table-card tbody tr:last-child td {

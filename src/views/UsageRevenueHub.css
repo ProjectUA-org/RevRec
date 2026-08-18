@@ -14,12 +14,6 @@
   margin: 0 0 6px;
 }
 
-.usage-revenue-hub h3 {
-  font-size: 0.92rem;
-  margin: 0 0 12px;
-  color: var(--text-muted);
-}
-
 .usage-revenue-hub__cards {
   display: flex;
   gap: 16px;
@@ -41,16 +35,4 @@
   font-size: 0.85rem;
   line-height: 1.55;
   max-width: 780px;
-}
-
-.usage-revenue-hub__journey {
-  margin-bottom: 36px;
-  padding: 20px 20px 4px;
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-}
-
-.usage-revenue-hub__journey .usage-revenue-hub__section:last-child {
-  margin-bottom: 20px;
 }
