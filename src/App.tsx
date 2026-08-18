@@ -5,15 +5,15 @@ import { ProfitAndLoss } from './views/ProfitAndLoss'
 import { UsageRevenueHub } from './views/UsageRevenueHub'
 
 const TABS = [
+  { id: 'usage-revenue-hub', label: 'Usage Revenue Hub' },
   { id: 'reconciliation', label: 'Revenue Reconciliation' },
   { id: 'pnl', label: 'P&L' },
-  { id: 'usage-revenue-hub', label: 'Usage Revenue Hub' },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('reconciliation')
+  const [activeTab, setActiveTab] = useState<TabId>('usage-revenue-hub')
 
   return (
     <div className="app">
@@ -30,9 +30,9 @@ function App() {
         ))}
       </nav>
 
+      {activeTab === 'usage-revenue-hub' && <UsageRevenueHub />}
       {activeTab === 'reconciliation' && <RevenueReconciliation />}
       {activeTab === 'pnl' && <ProfitAndLoss />}
-      {activeTab === 'usage-revenue-hub' && <UsageRevenueHub />}
     </div>
   )
 }
