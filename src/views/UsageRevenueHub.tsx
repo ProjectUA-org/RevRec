@@ -10,7 +10,6 @@ import {
 import { SummaryCard } from '../components/SummaryCard'
 import { ContractPolicyTable } from '../components/ContractPolicyTable'
 import { ClientBalancesTable } from '../components/ClientBalancesTable'
-import { ExceptionsPanel } from '../components/ExceptionsPanel'
 import { formatCurrency } from '../utils/format'
 import './UsageRevenueHub.css'
 
@@ -54,19 +53,15 @@ export function UsageRevenueHub() {
         <p className="usage-revenue-hub__section-note">
           Wallet balance and contract liability are the same reconciled number for prepaid contracts — this is the
           product tying the operational wallet ledger to the accounting subledger. Expand a row for that customer's
-          wallet lots and recent journal entries.
+          flagged exceptions, wallet lots, and recent journal entries.
         </p>
         <ClientBalancesTable
           customers={CUSTOMERS}
           balances={balances}
           walletLots={WALLET_LOTS}
           journalEntries={journalEntries}
+          exceptions={ACCOUNTING_EXCEPTIONS}
         />
-      </div>
-
-      <div className="usage-revenue-hub__section">
-        <h2>Accounting exceptions</h2>
-        <ExceptionsPanel exceptions={ACCOUNTING_EXCEPTIONS} />
       </div>
     </section>
   )

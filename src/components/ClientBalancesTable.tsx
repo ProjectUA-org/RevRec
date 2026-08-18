@@ -1,10 +1,11 @@
 import { Fragment, useState } from 'react'
 import type { ClientBalance } from '../data/mockUsageRevenue'
-import type { Customer, JournalEntry, WalletLot } from '../types/usageRevenue'
+import type { AccountingException, Customer, JournalEntry, WalletLot } from '../types/usageRevenue'
 import { formatCurrency } from '../utils/format'
 import { Tag } from './Tag'
 import { WalletLotsTable } from './WalletLotsTable'
 import { JournalEntriesTable } from './JournalEntriesTable'
+import { ExceptionsPanel } from './ExceptionsPanel'
 import './Table.css'
 import './ClientBalancesTable.css'
 
@@ -13,11 +14,13 @@ export function ClientBalancesTable({
   balances,
   walletLots,
   journalEntries,
+  exceptions,
 }: {
   customers: Customer[]
   balances: ClientBalance[]
   walletLots: WalletLot[]
   journalEntries: JournalEntry[]
+  exceptions: AccountingException[]
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
@@ -48,6 +51,7 @@ export function ClientBalancesTable({
             const isExpanded = expandedId === customer.id
             const lots = walletLots.filter((lot) => lot.customerId === customer.id)
             const entries = journalEntries.filter((e) => e.customerId === customer.id).slice(-5).reverse()
+            const customerExceptions = exceptions.filter((ex) => ex.customerId === customer.id)
 
             return (
               <Fragment key={customer.id}>
@@ -82,8 +86,11 @@ export function ClientBalancesTable({
                   <tr className="client-balances-table__detail-row">
                     <td colSpan={6}>
                       <div className="client-balances-table__detail">
-                        {balance?.needsAttention && (
-                          <p className="client-balances-table__attention">Needs attention: {balance.attentionReason}</p>
+                        {customerExceptions.length > 0 && (
+                          <>
+                            <h4>Accounting exceptions</h4>
+                            <ExceptionsPanel exceptions={customerExceptions} />
+                          </>
                         )}
                         <h4>Wallet lots</h4>
                         {lots.length > 0 ? (

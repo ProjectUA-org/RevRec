@@ -54,15 +54,6 @@ table.client-balances-table {
   margin-top: 20px;
 }
 
-.client-balances-table__attention {
-  margin: 0 0 16px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--status-gap-bg);
-  color: var(--status-gap);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
 
 .client-balances-table__muted {
   color: var(--text-muted);
