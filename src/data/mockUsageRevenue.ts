@@ -257,14 +257,12 @@ export function computeClientBalances(): ClientBalance[] {
         0,
       )
 
+    // Attention is driven entirely by ACCOUNTING_EXCEPTIONS — the same list
+    // rendered in the Accounting Exceptions panel — so the two sections can
+    // never drift out of sync with each other.
     const openException = ACCOUNTING_EXCEPTIONS.find((ex) => ex.customerId === customer.id && ex.status !== 'resolved')
-    const expiringLot = lots.find((lot) => lot.status === 'expiring-soon')
-    const needsAttention = Boolean(openException) || Boolean(expiringLot)
-    const attentionReason = openException
-      ? openException.type
-      : expiringLot
-        ? `Lot ${expiringLot.id} expiring soon`
-        : undefined
+    const needsAttention = Boolean(openException)
+    const attentionReason = openException?.type
 
     return { customerId: customer.id, walletBalance, accountsReceivable, needsAttention, attentionReason }
   })
@@ -452,6 +450,17 @@ export function buildJournalEntries(): JournalEntry[] {
 }
 
 export const ACCOUNTING_EXCEPTIONS: AccountingException[] = [
+  {
+    id: 'EX-000',
+    type: 'Wallet lot nearing expiration',
+    customerId: 'beacon',
+    severity: 'low',
+    status: 'open',
+    detail:
+      'Lot WL-B2 has $120,000 remaining and expires Sep 1, 2026. At the current consumption pace, a meaningful share is likely to go unused.',
+    suggestedAction: 'Reach out about renewal or accelerated usage before expiration, and confirm the breakage estimate ahead of close.',
+    relatedWalletLotId: 'WL-B2',
+  },
   {
     id: 'EX-001',
     type: 'Usage without contract',
