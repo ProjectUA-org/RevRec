@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { JournalEntry, UsageEvent } from '../types/usageRevenue'
 import { CUSTOMERS, customerName, walletLot } from '../data/mockUsageRevenue'
-import { formatCredits, formatCurrency, formatDateTime, formatTokens } from '../utils/format'
+import { formatCurrency, formatDateTime, formatUnits } from '../utils/format'
 import { explainJournalEntry } from '../utils/explainJournalEntry'
 import { Tag } from './Tag'
 import { JE_STATUS_LABEL, JE_STATUS_TONE, LOT_STATUS_LABEL, LOT_STATUS_TONE } from '../utils/tone'
@@ -30,7 +30,7 @@ export function UsageEventsTable({
     return sorted.filter((event) => {
       const haystack = [
         customerName(event.customerId),
-        event.model,
+        event.product,
         event.walletLotId ?? 'pay-as-you-go',
         event.id,
       ]
@@ -60,13 +60,13 @@ export function UsageEventsTable({
           {filtered.length} of {events.length} events
         </span>
       </div>
-      <table>
+      <table className="usage-events-table">
         <thead>
           <tr>
             <th>Timestamp</th>
             <th>Customer</th>
             <th>AI model</th>
-            <th className="numeric">Tokens</th>
+            <th className="numeric">Units</th>
             <th>Wallet lot</th>
             <th className="numeric">Revenue recognized</th>
             <th>Journal entry status</th>
@@ -77,8 +77,8 @@ export function UsageEventsTable({
             <tr key={event.id} className="usage-events-table__row" onClick={() => setSelected(event)}>
               <td>{formatDateTime(event.timestamp)}</td>
               <td>{customerName(event.customerId)}</td>
-              <td>{event.model}</td>
-              <td className="numeric">{formatTokens(event.tokens)}</td>
+              <td>{event.product}</td>
+              <td className="numeric">{formatUnits(event.unitsConsumed, event.unitLabel)}</td>
               <td>{event.walletLotId ?? 'Pay-as-you-go'}</td>
               <td className="numeric">{formatCurrency(event.revenueRecognized)}</td>
               <td>
@@ -106,11 +106,11 @@ export function UsageEventsTable({
             <h4>Usage detail</h4>
             <div className="side-panel__row">
               <span className="side-panel__row-label">AI model</span>
-              <span className="side-panel__row-value">{selected.model}</span>
+              <span className="side-panel__row-value">{selected.product}</span>
             </div>
             <div className="side-panel__row">
-              <span className="side-panel__row-label">Tokens</span>
-              <span className="side-panel__row-value">{formatCredits(selected.tokens)}</span>
+              <span className="side-panel__row-label">Units consumed</span>
+              <span className="side-panel__row-value">{formatUnits(selected.unitsConsumed, selected.unitLabel)}</span>
             </div>
             <div className="side-panel__row">
               <span className="side-panel__row-label">Revenue recognized</span>
@@ -123,6 +123,10 @@ export function UsageEventsTable({
             <div className="side-panel__row">
               <span className="side-panel__row-label">Contract ID</span>
               <span className="side-panel__row-value">{selectedCustomer?.contractId}</span>
+            </div>
+            <div className="side-panel__row">
+              <span className="side-panel__row-label">Legal entity</span>
+              <span className="side-panel__row-value">{selectedCustomer?.legalEntity}</span>
             </div>
             <div className="side-panel__row">
               <span className="side-panel__row-label">Contract type</span>
@@ -142,7 +146,7 @@ export function UsageEventsTable({
                 </div>
                 <div className="side-panel__row">
                   <span className="side-panel__row-label">Remaining balance</span>
-                  <span className="side-panel__row-value">{formatCredits(selectedLot.remainingCredits)}</span>
+                  <span className="side-panel__row-value">{formatCurrency(selectedLot.remainingCredits)}</span>
                 </div>
                 <div className="side-panel__row">
                   <span className="side-panel__row-label">Status</span>
@@ -153,7 +157,7 @@ export function UsageEventsTable({
               </>
             ) : (
               <p className="side-panel__explanation">
-                Billed directly under a pay-as-you-go contract — no prepaid wallet is drawn down.
+                Billed in arrears under a pay-as-you-go contract — no prepaid wallet is drawn down.
               </p>
             )}
           </div>

@@ -1,19 +1,25 @@
 export type ContractType = 'prepaid' | 'payg'
+export type MeteringUnit = 'tokens' | 'gpu-minutes' | 'api-requests'
 
 export interface Customer {
   id: string
   name: string
+  legalEntity: string
   contractType: ContractType
+  meteringUnit: MeteringUnit
   contractId: string
+  expirationPolicy: string
+  refundable: boolean
+  autoRecharge: boolean
 }
 
 export type WalletLotSource = 'purchase' | 'promotional' | 'rollover'
-export type WalletLotStatus = 'active' | 'expiring-soon' | 'expired' | 'depleted' | 'exception'
+export type WalletLotStatus = 'active' | 'expiring-soon' | 'expired' | 'depleted'
 
 export interface WalletLot {
   id: string
   customerId: string
-  purchaseDate: string
+  issueDate: string
   originalCredits: number
   remainingCredits: number
   expiration: string
@@ -21,6 +27,9 @@ export interface WalletLot {
   status: WalletLotStatus
   breakageAmount?: number
   breakageDate?: string
+  remittanceAmount?: number
+  remittanceDate?: string
+  remittanceStatus?: 'pending' | 'remitted'
 }
 
 export type JournalEntryStatus = 'posted' | 'pending' | 'exception'
@@ -29,23 +38,37 @@ export interface UsageEvent {
   id: string
   timestamp: string
   customerId: string
-  model: string
-  tokens: number
+  product: string
+  unitsConsumed: number
+  unitLabel: string
   walletLotId: string | null
   revenueRecognized: number
   journalEntryStatus: JournalEntryStatus
 }
 
-export interface Refund {
+export type BillingEventKind = 'invoice-credit-sale' | 'cash-credit-sale' | 'invoice-usage' | 'collection' | 'refund'
+export type BillingEventStatus = 'outstanding' | 'collected' | 'refunded'
+
+export interface BillingEvent {
   id: string
   date: string
   customerId: string
-  walletLotId: string
+  kind: BillingEventKind
+  description: string
   amount: number
-  reason: string
+  status: BillingEventStatus
+  walletLotId?: string
+  relatedInvoiceId?: string
 }
 
-export type JournalEntryKind = 'usage-recognition' | 'credit-sale' | 'refund' | 'breakage'
+export type JournalEntryKind =
+  | 'usage-recognition'
+  | 'credit-sale'
+  | 'collection'
+  | 'refund'
+  | 'breakage'
+  | 'remittance-reclass'
+  | 'promotional-grant'
 
 export interface JournalEntry {
   id: string

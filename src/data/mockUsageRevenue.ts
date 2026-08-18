@@ -1,8 +1,8 @@
 import type {
   AccountingException,
+  BillingEvent,
   Customer,
   JournalEntry,
-  Refund,
   UsageEvent,
   WalletLot,
   WalletLotStatus,
@@ -13,15 +13,65 @@ import type {
 export const TODAY = new Date('2026-08-18T00:00:00Z')
 const DAY_MS = 24 * 60 * 60 * 1000
 
+// This dashboard models OpenAI as the issuer: it sells prepaid API credit
+// wallets (and, for one customer, pay-as-you-go access) to enterprise
+// customers who consume GPT-5-family models against those balances.
 export const CUSTOMERS: Customer[] = [
-  { id: 'openai', name: 'OpenAI', contractType: 'prepaid', contractId: 'CT-OPENAI-01' },
-  { id: 'anthropic', name: 'Anthropic', contractType: 'prepaid', contractId: 'CT-ANTHROPIC-01' },
-  { id: 'vercel', name: 'Vercel', contractType: 'prepaid', contractId: 'CT-VERCEL-01' },
-  { id: 'clay', name: 'Clay', contractType: 'payg', contractId: 'CT-CLAY-01' },
-  { id: 'cursor', name: 'Cursor AI', contractType: 'prepaid', contractId: 'CT-CURSOR-01' },
-  { id: 'perplexity', name: 'Perplexity', contractType: 'prepaid', contractId: 'CT-PERPLEXITY-01' },
-  { id: 'scaleai', name: 'Scale AI', contractType: 'prepaid', contractId: 'CT-SCALEAI-01' },
-  { id: 'meridian', name: 'Meridian Labs', contractType: 'prepaid', contractId: 'CT-MERIDIAN-01' },
+  {
+    id: 'beacon',
+    name: 'Beacon Robotics',
+    legalEntity: 'OpenAI, Inc. (US)',
+    contractType: 'prepaid',
+    meteringUnit: 'gpu-minutes',
+    contractId: 'CT-BEACON-01',
+    expirationPolicy: '12 months from issuance',
+    refundable: false,
+    autoRecharge: true,
+  },
+  {
+    id: 'northwind',
+    name: 'Northwind Analytics',
+    legalEntity: 'OpenAI, Inc. (US)',
+    contractType: 'prepaid',
+    meteringUnit: 'tokens',
+    contractId: 'CT-NORTHWIND-01',
+    expirationPolicy: '12 months from issuance',
+    refundable: true,
+    autoRecharge: false,
+  },
+  {
+    id: 'lumen',
+    name: 'Lumen Health',
+    legalEntity: 'OpenAI Ireland Ltd. (IE)',
+    contractType: 'prepaid',
+    meteringUnit: 'api-requests',
+    contractId: 'CT-LUMEN-01',
+    expirationPolicy: '16 months from issuance',
+    refundable: false,
+    autoRecharge: false,
+  },
+  {
+    id: 'cascade',
+    name: 'Cascade Logistics',
+    legalEntity: 'OpenAI, Inc. (US)',
+    contractType: 'prepaid',
+    meteringUnit: 'tokens',
+    contractId: 'CT-CASCADE-01',
+    expirationPolicy: '12 months (paid) / 90 days (promotional)',
+    refundable: false,
+    autoRecharge: false,
+  },
+  {
+    id: 'argon',
+    name: 'Argon Studios',
+    legalEntity: 'OpenAI, Inc. (US)',
+    contractType: 'payg',
+    meteringUnit: 'api-requests',
+    contractId: 'CT-ARGON-01',
+    expirationPolicy: 'N/A — billed in arrears',
+    refundable: false,
+    autoRecharge: false,
+  },
 ]
 
 export function customerName(customerId: string): string {
@@ -30,7 +80,6 @@ export function customerName(customerId: string): string {
 
 function deriveLotStatus(remainingCredits: number, expiration: string): WalletLotStatus {
   const daysToExpiry = (new Date(`${expiration}T00:00:00Z`).getTime() - TODAY.getTime()) / DAY_MS
-  if (remainingCredits < 0) return 'exception'
   if (remainingCredits === 0) return daysToExpiry <= 0 ? 'expired' : 'depleted'
   if (daysToExpiry <= 0) return 'expired'
   if (daysToExpiry <= 30) return 'expiring-soon'
@@ -40,35 +89,33 @@ function deriveLotStatus(remainingCredits: number, expiration: string): WalletLo
 type RawLot = Omit<WalletLot, 'status'>
 
 const RAW_WALLET_LOTS: RawLot[] = [
-  // OpenAI — large, well-established prepaid relationship, mostly active.
-  { id: 'WL-1001', customerId: 'openai', purchaseDate: '2026-02-01', originalCredits: 3_000_000, remainingCredits: 640_000, expiration: '2027-02-01', source: 'purchase' },
-  { id: 'WL-1002', customerId: 'openai', purchaseDate: '2026-08-05', originalCredits: 1_200_000, remainingCredits: 1_090_000, expiration: '2027-08-05', source: 'purchase' },
+  // Beacon Robotics — GPU-minutes, auto-recharge enabled. Active lot, an
+  // older lot expiring in two weeks, a rollover lot, and a fresh August lot
+  // that was invoiced (not paid up front) and is still outstanding.
+  { id: 'WL-B1', customerId: 'beacon', issueDate: '2026-02-01', originalCredits: 2_000_000, remainingCredits: 850_000, expiration: '2027-02-01', source: 'purchase' },
+  { id: 'WL-B2', customerId: 'beacon', issueDate: '2026-05-01', originalCredits: 500_000, remainingCredits: 120_000, expiration: '2026-09-01', source: 'purchase' },
+  { id: 'WL-B3', customerId: 'beacon', issueDate: '2026-08-01', originalCredits: 80_000, remainingCredits: 80_000, expiration: '2027-02-01', source: 'rollover' },
+  { id: 'WL-B4', customerId: 'beacon', issueDate: '2026-08-01', originalCredits: 500_000, remainingCredits: 500_000, expiration: '2027-08-01', source: 'purchase' },
 
-  // Anthropic — largest wallet, heavy August draw-down.
-  { id: 'WL-2001', customerId: 'anthropic', purchaseDate: '2025-11-01', originalCredits: 5_000_000, remainingCredits: 1_150_000, expiration: '2026-11-01', source: 'purchase' },
-  { id: 'WL-2002', customerId: 'anthropic', purchaseDate: '2026-08-10', originalCredits: 2_000_000, remainingCredits: 2_000_000, expiration: '2027-08-10', source: 'purchase' },
+  // Northwind Analytics — tokens. Active lot with a partial refund, an
+  // expired lot whose small unused balance was recognized as breakage via
+  // the remote method, and a fresh cash-upfront August lot.
+  { id: 'WL-N1', customerId: 'northwind', issueDate: '2026-03-01', originalCredits: 400_000, remainingCredits: 175_000, expiration: '2027-03-01', source: 'purchase' },
+  { id: 'WL-N2', customerId: 'northwind', issueDate: '2025-06-01', originalCredits: 150_000, remainingCredits: 0, expiration: '2026-08-01', source: 'purchase', breakageAmount: 18_000, breakageDate: '2026-08-01' },
+  { id: 'WL-N3', customerId: 'northwind', issueDate: '2026-08-05', originalCredits: 100_000, remainingCredits: 100_000, expiration: '2027-08-05', source: 'purchase' },
 
-  // Vercel — an older lot expiring in two weeks, plus a rollover lot reissued from unused balance.
-  { id: 'WL-3001', customerId: 'vercel', purchaseDate: '2025-09-01', originalCredits: 800_000, remainingCredits: 150_000, expiration: '2026-09-01', source: 'purchase' },
-  { id: 'WL-3002', customerId: 'vercel', purchaseDate: '2026-08-01', originalCredits: 150_000, remainingCredits: 150_000, expiration: '2027-02-01', source: 'rollover' },
+  // Lumen Health — API requests, routed through the Ireland entity. Active
+  // lot, an expired lot whose unused balance is subject to unclaimed-property
+  // rules in that jurisdiction (reclassified to a remittance liability
+  // instead of breakage revenue), and a fresh cash-upfront August lot.
+  { id: 'WL-L1', customerId: 'lumen', issueDate: '2026-05-01', originalCredits: 300_000, remainingCredits: 140_000, expiration: '2027-05-01', source: 'purchase' },
+  { id: 'WL-L2', customerId: 'lumen', issueDate: '2025-04-01', originalCredits: 200_000, remainingCredits: 0, expiration: '2026-08-01', source: 'purchase', remittanceAmount: 31_000, remittanceDate: '2026-08-01', remittanceStatus: 'pending' },
+  { id: 'WL-L3', customerId: 'lumen', issueDate: '2026-08-08', originalCredits: 90_000, remainingCredits: 90_000, expiration: '2027-08-08', source: 'purchase' },
 
-  // Clay — mostly pay-as-you-go; one small promotional credit lot.
-  { id: 'WL-4001', customerId: 'clay', purchaseDate: '2026-08-01', originalCredits: 25_000, remainingCredits: 21_900, expiration: '2026-11-01', source: 'promotional' },
-
-  // Cursor AI — a fully depleted pilot lot, an expiring-soon lot, and a fresh August lot.
-  { id: 'WL-5000', customerId: 'cursor', purchaseDate: '2026-03-01', originalCredits: 60_000, remainingCredits: 0, expiration: '2027-03-01', source: 'purchase' },
-  { id: 'WL-5001', customerId: 'cursor', purchaseDate: '2026-05-01', originalCredits: 400_000, remainingCredits: 95_000, expiration: '2026-09-01', source: 'purchase' },
-  { id: 'WL-5002', customerId: 'cursor', purchaseDate: '2026-08-12', originalCredits: 300_000, remainingCredits: 251_500, expiration: '2027-02-12', source: 'purchase' },
-
-  // Perplexity — one lot expired Aug 1 with unused breakage, one active lot.
-  { id: 'WL-6001', customerId: 'perplexity', purchaseDate: '2025-05-01', originalCredits: 250_000, remainingCredits: 0, expiration: '2026-08-01', source: 'purchase', breakageAmount: 42_000, breakageDate: '2026-08-01' },
-  { id: 'WL-6002', customerId: 'perplexity', purchaseDate: '2026-06-01', originalCredits: 600_000, remainingCredits: 410_000, expiration: '2027-06-01', source: 'purchase' },
-
-  // Scale AI — partial refund issued against this lot in August.
-  { id: 'WL-7001', customerId: 'scaleai', purchaseDate: '2026-07-01', originalCredits: 1_000_000, remainingCredits: 620_000, expiration: '2027-07-01', source: 'purchase' },
-
-  // Meridian Labs — usage exceeded the wallet balance; flagged accounting exception.
-  { id: 'WL-8001', customerId: 'meridian', purchaseDate: '2026-08-01', originalCredits: 150_000, remainingCredits: -15_000, expiration: '2027-02-01', source: 'purchase' },
+  // Cascade Logistics — tokens. A purchased lot alongside a separately
+  // tracked promotional lot (marketing incentive, no cash changes hands).
+  { id: 'WL-C1', customerId: 'cascade', issueDate: '2026-07-01', originalCredits: 250_000, remainingCredits: 190_000, expiration: '2027-07-01', source: 'purchase' },
+  { id: 'WL-C2', customerId: 'cascade', issueDate: '2026-08-01', originalCredits: 20_000, remainingCredits: 15_500, expiration: '2026-11-01', source: 'promotional' },
 ]
 
 export const WALLET_LOTS: WalletLot[] = RAW_WALLET_LOTS.map((lot) => ({
@@ -76,50 +123,52 @@ export const WALLET_LOTS: WalletLot[] = RAW_WALLET_LOTS.map((lot) => ({
   status: deriveLotStatus(lot.remainingCredits, lot.expiration),
 }))
 
-export function walletLot(id: string | null): WalletLot | undefined {
+export function walletLot(id: string | null | undefined): WalletLot | undefined {
   if (!id) return undefined
   return WALLET_LOTS.find((lot) => lot.id === id)
 }
 
-export const REFUNDS: Refund[] = [
-  {
-    id: 'RF-001',
-    date: '2026-08-09',
-    customerId: 'scaleai',
-    walletLotId: 'WL-7001',
-    amount: 120_000,
-    reason: 'Pro-rated refund for Q3 committed-use tier downgrade per contract amendment #2.',
-  },
-]
-
 export const USAGE_EVENTS: UsageEvent[] = [
-  { id: 'UE-001', timestamp: '2026-08-02T09:14:00', customerId: 'openai', model: 'GPT-5', tokens: 140_000_000, walletLotId: 'WL-1001', revenueRecognized: 85_000, journalEntryStatus: 'posted' },
-  { id: 'UE-002', timestamp: '2026-08-05T14:02:00', customerId: 'openai', model: 'GPT-5', tokens: 150_000_000, walletLotId: 'WL-1001', revenueRecognized: 92_000, journalEntryStatus: 'posted' },
-  { id: 'UE-003', timestamp: '2026-08-09T11:47:00', customerId: 'anthropic', model: 'Claude Opus 5', tokens: 210_000_000, walletLotId: 'WL-2001', revenueRecognized: 128_000, journalEntryStatus: 'posted' },
-  { id: 'UE-004', timestamp: '2026-08-12T08:30:00', customerId: 'openai', model: 'GPT-5 mini', tokens: 95_000_000, walletLotId: 'WL-1002', revenueRecognized: 45_000, journalEntryStatus: 'posted' },
-  { id: 'UE-005', timestamp: '2026-08-15T16:05:00', customerId: 'anthropic', model: 'Claude Opus 5', tokens: 3_650_000_000, walletLotId: 'WL-2001', revenueRecognized: 2_300_000, journalEntryStatus: 'posted' },
-  { id: 'UE-006', timestamp: '2026-08-16T10:12:00', customerId: 'openai', model: 'GPT-5', tokens: 118_000_000, walletLotId: 'WL-1002', revenueRecognized: 65_000, journalEntryStatus: 'posted' },
-  { id: 'UE-007', timestamp: '2026-08-18T13:20:00', customerId: 'openai', model: 'GPT-5', tokens: 132_000_000, walletLotId: 'WL-1001', revenueRecognized: 78_000, journalEntryStatus: 'posted' },
-  { id: 'UE-008', timestamp: '2026-08-03T09:55:00', customerId: 'vercel', model: 'Llama 4 70B', tokens: 60_000_000, walletLotId: 'WL-3001', revenueRecognized: 38_000, journalEntryStatus: 'posted' },
-  { id: 'UE-009', timestamp: '2026-08-11T15:40:00', customerId: 'vercel', model: 'Llama 4 70B', tokens: 42_000_000, walletLotId: 'WL-3001', revenueRecognized: 26_000, journalEntryStatus: 'posted' },
-  { id: 'UE-010', timestamp: '2026-08-01T12:00:00', customerId: 'clay', model: 'Mistral Large 3', tokens: 8_000_000, walletLotId: null, revenueRecognized: 4_200, journalEntryStatus: 'posted' },
-  { id: 'UE-011', timestamp: '2026-08-06T09:30:00', customerId: 'clay', model: 'Mistral Large 3', tokens: 11_500_000, walletLotId: null, revenueRecognized: 6_050, journalEntryStatus: 'posted' },
-  { id: 'UE-012', timestamp: '2026-08-13T17:22:00', customerId: 'clay', model: 'GPT-5 mini', tokens: 6_200_000, walletLotId: 'WL-4001', revenueRecognized: 3_100, journalEntryStatus: 'posted' },
-  { id: 'UE-013', timestamp: '2026-08-04T10:05:00', customerId: 'cursor', model: 'Claude Sonnet 5', tokens: 54_000_000, walletLotId: 'WL-5001', revenueRecognized: 32_000, journalEntryStatus: 'posted' },
-  { id: 'UE-014', timestamp: '2026-08-14T09:48:00', customerId: 'cursor', model: 'Claude Sonnet 5', tokens: 61_000_000, walletLotId: 'WL-5002', revenueRecognized: 37_500, journalEntryStatus: 'posted' },
-  { id: 'UE-015', timestamp: '2026-08-07T14:33:00', customerId: 'perplexity', model: 'GPT-5', tokens: 88_000_000, walletLotId: 'WL-6002', revenueRecognized: 54_000, journalEntryStatus: 'posted' },
-  { id: 'UE-016', timestamp: '2026-08-16T11:02:00', customerId: 'perplexity', model: 'Claude Opus 5', tokens: 72_000_000, walletLotId: 'WL-6002', revenueRecognized: 44_000, journalEntryStatus: 'posted' },
-  { id: 'UE-017', timestamp: '2026-08-02T08:20:00', customerId: 'scaleai', model: 'Llama 4 70B', tokens: 145_000_000, walletLotId: 'WL-7001', revenueRecognized: 88_000, journalEntryStatus: 'posted' },
-  { id: 'UE-018', timestamp: '2026-08-10T13:15:00', customerId: 'scaleai', model: 'Llama 4 70B', tokens: 151_000_000, walletLotId: 'WL-7001', revenueRecognized: 92_000, journalEntryStatus: 'posted' },
-  { id: 'UE-019', timestamp: '2026-08-08T09:00:00', customerId: 'meridian', model: 'GPT-5 mini', tokens: 210_000_000, walletLotId: 'WL-8001', revenueRecognized: 125_000, journalEntryStatus: 'posted' },
-  { id: 'UE-020', timestamp: '2026-08-12T12:40:00', customerId: 'meridian', model: 'GPT-5 mini', tokens: 65_000_000, walletLotId: 'WL-8001', revenueRecognized: 40_000, journalEntryStatus: 'exception' },
-  { id: 'UE-021', timestamp: '2026-08-18T09:10:00', customerId: 'scaleai', model: 'Llama 4 70B', tokens: 68_000_000, walletLotId: 'WL-7001', revenueRecognized: 41_000, journalEntryStatus: 'posted' },
-  { id: 'UE-022', timestamp: '2026-08-18T10:45:00', customerId: 'cursor', model: 'Claude Sonnet 5', tokens: 18_000_000, walletLotId: 'WL-5002', revenueRecognized: 11_000, journalEntryStatus: 'pending' },
+  // Beacon Robotics (GPU-minutes, prepaid)
+  { id: 'UE-001', timestamp: '2026-08-03T09:55:00', customerId: 'beacon', product: 'GPT-5 fine-tuning', unitsConsumed: 40_000, unitLabel: 'GPU-min', walletLotId: 'WL-B1', revenueRecognized: 32_000, journalEntryStatus: 'posted' },
+  { id: 'UE-002', timestamp: '2026-08-09T11:20:00', customerId: 'beacon', product: 'GPT-5 fine-tuning', unitsConsumed: 35_000, unitLabel: 'GPU-min', walletLotId: 'WL-B1', revenueRecognized: 28_000, journalEntryStatus: 'posted' },
+  { id: 'UE-003', timestamp: '2026-08-16T14:10:00', customerId: 'beacon', product: 'GPT-5 fine-tuning', unitsConsumed: 12_000, unitLabel: 'GPU-min', walletLotId: 'WL-B2', revenueRecognized: 9_600, journalEntryStatus: 'posted' },
+  { id: 'UE-004', timestamp: '2026-08-18T09:05:00', customerId: 'beacon', product: 'GPT-5 fine-tuning', unitsConsumed: 15_000, unitLabel: 'GPU-min', walletLotId: 'WL-B2', revenueRecognized: 12_000, journalEntryStatus: 'posted' },
+
+  // Northwind Analytics (tokens, prepaid)
+  { id: 'UE-005', timestamp: '2026-08-04T10:05:00', customerId: 'northwind', product: 'GPT-5', unitsConsumed: 60_000_000, unitLabel: 'tokens', walletLotId: 'WL-N1', revenueRecognized: 35_000, journalEntryStatus: 'posted' },
+  { id: 'UE-006', timestamp: '2026-08-13T15:40:00', customerId: 'northwind', product: 'GPT-5 mini', unitsConsumed: 42_000_000, unitLabel: 'tokens', walletLotId: 'WL-N1', revenueRecognized: 24_000, journalEntryStatus: 'posted' },
+
+  // Lumen Health (API requests, prepaid, Ireland entity)
+  { id: 'UE-007', timestamp: '2026-08-06T08:30:00', customerId: 'lumen', product: 'GPT-5', unitsConsumed: 850_000, unitLabel: 'requests', walletLotId: 'WL-L1', revenueRecognized: 28_000, journalEntryStatus: 'posted' },
+  { id: 'UE-008', timestamp: '2026-08-15T13:15:00', customerId: 'lumen', product: 'GPT-5 mini', unitsConsumed: 620_000, unitLabel: 'requests', walletLotId: 'WL-L1', revenueRecognized: 20_000, journalEntryStatus: 'posted' },
+
+  // Cascade Logistics (tokens, prepaid — one purchased lot, one promotional)
+  { id: 'UE-009', timestamp: '2026-08-07T12:45:00', customerId: 'cascade', product: 'GPT-5', unitsConsumed: 30_000_000, unitLabel: 'tokens', walletLotId: 'WL-C1', revenueRecognized: 18_000, journalEntryStatus: 'posted' },
+  { id: 'UE-010', timestamp: '2026-08-14T16:00:00', customerId: 'cascade', product: 'GPT-5 mini', unitsConsumed: 7_500_000, unitLabel: 'tokens', walletLotId: 'WL-C2', revenueRecognized: 4_500, journalEntryStatus: 'posted' },
+  { id: 'UE-011', timestamp: '2026-08-18T10:30:00', customerId: 'cascade', product: 'GPT-5', unitsConsumed: 5_000_000, unitLabel: 'tokens', walletLotId: 'WL-C1', revenueRecognized: 3_000, journalEntryStatus: 'posted' },
+
+  // Argon Studios (API requests, pay-as-you-go — billed in arrears, no wallet)
+  { id: 'UE-012', timestamp: '2026-08-02T09:00:00', customerId: 'argon', product: 'GPT-5', unitsConsumed: 120_000, unitLabel: 'requests', walletLotId: null, revenueRecognized: 7_200, journalEntryStatus: 'posted' },
+  { id: 'UE-013', timestamp: '2026-08-09T14:20:00', customerId: 'argon', product: 'GPT-5', unitsConsumed: 95_000, unitLabel: 'requests', walletLotId: null, revenueRecognized: 5_700, journalEntryStatus: 'posted' },
+  { id: 'UE-014', timestamp: '2026-08-12T11:00:00', customerId: 'argon', product: 'GPT-5 mini', unitsConsumed: 60_000, unitLabel: 'requests', walletLotId: null, revenueRecognized: 3_100, journalEntryStatus: 'exception' },
+  { id: 'UE-015', timestamp: '2026-08-18T15:30:00', customerId: 'argon', product: 'GPT-5', unitsConsumed: 40_000, unitLabel: 'requests', walletLotId: null, revenueRecognized: 2_600, journalEntryStatus: 'pending' },
 ]
 
-export function usageEvent(id: string): UsageEvent | undefined {
+export function usageEvent(id: string | undefined): UsageEvent | undefined {
+  if (!id) return undefined
   return USAGE_EVENTS.find((e) => e.id === id)
 }
+
+export const BILLING_EVENTS: BillingEvent[] = [
+  { id: 'INV-B1', date: '2026-08-01', customerId: 'beacon', kind: 'invoice-credit-sale', description: 'Prepaid credit purchase — lot WL-B4 (invoiced, Net 30)', amount: 500_000, status: 'outstanding', walletLotId: 'WL-B4' },
+  { id: 'INV-N1', date: '2026-08-05', customerId: 'northwind', kind: 'cash-credit-sale', description: 'Prepaid credit purchase — lot WL-N3 (paid up front)', amount: 100_000, status: 'collected', walletLotId: 'WL-N3' },
+  { id: 'INV-L1', date: '2026-08-08', customerId: 'lumen', kind: 'cash-credit-sale', description: 'Prepaid credit purchase — lot WL-L3 (paid up front)', amount: 90_000, status: 'collected', walletLotId: 'WL-L3' },
+  { id: 'INV-A1', date: '2026-08-03', customerId: 'argon', kind: 'invoice-usage', description: 'Usage invoice — Aug 2 usage (Net 30)', amount: 7_200, status: 'outstanding' },
+  { id: 'INV-A2', date: '2026-08-10', customerId: 'argon', kind: 'invoice-usage', description: 'Usage invoice — Aug 9 usage (Net 30)', amount: 5_700, status: 'collected' },
+  { id: 'COL-A2', date: '2026-08-18', customerId: 'argon', kind: 'collection', description: 'Collection against INV-A2', amount: 5_700, status: 'collected', relatedInvoiceId: 'INV-A2' },
+  { id: 'RF-N1', date: '2026-08-11', customerId: 'northwind', kind: 'refund', description: 'Refund — prepaid tier downgrade against lot WL-N1', amount: 45_000, status: 'refunded', walletLotId: 'WL-N1' },
+]
 
 function isAugust(dateLike: string): boolean {
   return dateLike.slice(0, 7) === '2026-08'
@@ -132,7 +181,7 @@ function isToday(timestamp: string): boolean {
 export interface UsageRevenueKpis {
   revenueRecognizedMtd: number
   contractLiability: number
-  outstandingCredits: number
+  accountsReceivable: number
   creditsConsumedToday: number
   breakageRecognizedMtd: number
   breakageProjected: number
@@ -145,7 +194,16 @@ export function computeKpis(): UsageRevenueKpis {
     0,
   )
   const contractLiability = WALLET_LOTS.reduce((sum, lot) => sum + lot.remainingCredits, 0)
-  const outstandingCredits = WALLET_LOTS.reduce((sum, lot) => sum + Math.max(lot.remainingCredits, 0), 0)
+  // Accounts receivable is accrued at the moment AR is debited — whether by
+  // an invoiced credit sale or by PAYG usage recognition — not only once an
+  // invoice document has been generated. A usage event that hasn't been
+  // formally invoiced yet (e.g. a held exception, or today's usage ahead of
+  // the next billing cycle) still increases AR, consistent with billing
+  // state lagging revenue state rather than the other way around.
+  const accountsReceivable =
+    BILLING_EVENTS.filter((b) => b.kind === 'invoice-credit-sale').reduce((sum, b) => sum + b.amount, 0) +
+    USAGE_EVENTS.filter((e) => e.walletLotId === null).reduce((sum, e) => sum + e.revenueRecognized, 0) -
+    BILLING_EVENTS.filter((b) => b.kind === 'collection').reduce((sum, b) => sum + b.amount, 0)
   const creditsConsumedToday = USAGE_EVENTS.filter((e) => isToday(e.timestamp)).reduce(
     (sum, e) => sum + e.revenueRecognized,
     0,
@@ -164,7 +222,7 @@ export function computeKpis(): UsageRevenueKpis {
   return {
     revenueRecognizedMtd,
     contractLiability,
-    outstandingCredits,
+    accountsReceivable,
     creditsConsumedToday,
     breakageRecognizedMtd,
     breakageProjected,
@@ -179,27 +237,38 @@ export interface RollforwardRow {
 }
 
 export function computeRollforward(): RollforwardRow[] {
-  const creditsSold = WALLET_LOTS.filter((lot) => lot.source === 'purchase' && isAugust(lot.purchaseDate)).reduce(
+  const creditsSold = WALLET_LOTS.filter((lot) => lot.source === 'purchase' && isAugust(lot.issueDate)).reduce(
     (sum, lot) => sum + lot.originalCredits,
     0,
   )
+  const promotionalGrants = WALLET_LOTS.filter(
+    (lot) => lot.source === 'promotional' && isAugust(lot.issueDate),
+  ).reduce((sum, lot) => sum + lot.originalCredits, 0)
   const revenueRecognized = USAGE_EVENTS.filter((e) => e.walletLotId && isAugust(e.timestamp)).reduce(
     (sum, e) => sum + e.revenueRecognized,
     0,
   )
-  const refunds = REFUNDS.filter((r) => isAugust(r.date)).reduce((sum, r) => sum + r.amount, 0)
+  const refunds = BILLING_EVENTS.filter((b) => b.kind === 'refund' && isAugust(b.date)).reduce(
+    (sum, b) => sum + b.amount,
+    0,
+  )
+  const remittance = WALLET_LOTS.filter(
+    (lot) => lot.remittanceAmount && lot.remittanceDate && isAugust(lot.remittanceDate),
+  ).reduce((sum, lot) => sum + (lot.remittanceAmount ?? 0), 0)
   const breakage = WALLET_LOTS.filter(
     (lot) => lot.breakageAmount && lot.breakageDate && isAugust(lot.breakageDate),
   ).reduce((sum, lot) => sum + (lot.breakageAmount ?? 0), 0)
 
   const ending = WALLET_LOTS.reduce((sum, lot) => sum + lot.remainingCredits, 0)
-  const beginning = ending - creditsSold + revenueRecognized + refunds + breakage
+  const beginning = ending - creditsSold - promotionalGrants + revenueRecognized + refunds + remittance + breakage
 
   return [
     { label: 'Beginning contract liability (Aug 1)', amount: beginning },
     { label: 'Credits sold', amount: creditsSold },
+    { label: 'Promotional credits granted', amount: promotionalGrants },
     { label: 'Revenue recognized', amount: -revenueRecognized },
     { label: 'Refunds', amount: -refunds },
+    { label: 'Reclassified to remittance liability', amount: -remittance },
     { label: 'Breakage', amount: -breakage },
     { label: 'Ending contract liability', amount: ending, isTotal: true },
   ]
@@ -212,28 +281,30 @@ export interface WaterfallStage {
 }
 
 export function computeWaterfall(): WaterfallStage[] {
-  const cashPrepaid = WALLET_LOTS.filter((lot) => lot.source === 'purchase').reduce(
+  const cashOrArPrepaid = WALLET_LOTS.filter((lot) => lot.source === 'purchase').reduce(
     (sum, lot) => sum + lot.originalCredits,
     0,
   )
   const creditsIssued = WALLET_LOTS.reduce((sum, lot) => sum + lot.originalCredits, 0)
   const usageConsumed = WALLET_LOTS.reduce(
-    (sum, lot) => sum + (lot.originalCredits - lot.remainingCredits - (lot.breakageAmount ?? 0)),
+    (sum, lot) =>
+      sum + (lot.originalCredits - lot.remainingCredits - (lot.breakageAmount ?? 0) - (lot.remittanceAmount ?? 0)),
     0,
   )
-  const refundTotal = REFUNDS.reduce((sum, r) => sum + r.amount, 0)
+  const refundTotal = BILLING_EVENTS.filter((b) => b.kind === 'refund').reduce((sum, b) => sum + b.amount, 0)
+  const remittanceTotal = WALLET_LOTS.reduce((sum, lot) => sum + (lot.remittanceAmount ?? 0), 0)
   const breakageTotal = WALLET_LOTS.reduce((sum, lot) => sum + (lot.breakageAmount ?? 0), 0)
   const remainingLiability = WALLET_LOTS.reduce((sum, lot) => sum + lot.remainingCredits, 0)
 
   return [
-    { label: 'Customer prepays cash', amount: cashPrepaid, caption: 'Cash collected for prepaid credit purchases' },
+    { label: 'Customer prepays cash / AR', amount: cashOrArPrepaid, caption: 'Cash or invoiced receivable for prepaid credit purchases' },
     { label: 'Credits issued to wallet', amount: creditsIssued, caption: '+ promotional & rollover credits added' },
     { label: 'Usage events received', amount: usageConsumed, caption: 'Metered consumption against wallet balances' },
     { label: 'Revenue recognized', amount: usageConsumed, caption: 'Usage satisfies the performance obligation 1:1' },
     {
       label: 'Remaining contract liability',
       amount: remainingLiability,
-      caption: `Net of $${refundTotal.toLocaleString()} refunds & $${breakageTotal.toLocaleString()} breakage`,
+      caption: `Net of $${refundTotal.toLocaleString()} refunds, $${remittanceTotal.toLocaleString()} remitted & $${breakageTotal.toLocaleString()} breakage`,
     },
   ]
 }
@@ -249,7 +320,7 @@ export function buildJournalEntries(): JournalEntry[] {
       date: event.timestamp.slice(0, 10),
       customerId: event.customerId,
       kind: 'usage-recognition',
-      description: `${event.model} usage — ${lot ? `drawn from ${lot.id}` : 'pay-as-you-go billing'}`,
+      description: `${event.product} usage — ${lot ? `drawn from ${lot.id}` : 'pay-as-you-go billing'}`,
       debitAccount: lot ? 'Contract Liability' : 'Accounts Receivable',
       debitAmount: event.revenueRecognized,
       creditAccount: 'Usage Revenue',
@@ -263,7 +334,7 @@ export function buildJournalEntries(): JournalEntry[] {
           ? [
               'Usage ingested from metering pipeline',
               'Revenue rule engine applied ASC 606 recognition',
-              'Exception engine flagged: usage exceeds available wallet balance',
+              'Exception engine flagged: usage occurred before contract execution date',
               'Held for Controller review — not yet posted to GL',
             ]
           : [
@@ -276,59 +347,99 @@ export function buildJournalEntries(): JournalEntry[] {
     })
   }
 
-  for (const lot of WALLET_LOTS) {
-    if (lot.source === 'purchase' && isAugust(lot.purchaseDate)) {
-      const customer = CUSTOMERS.find((c) => c.id === lot.customerId)
+  for (const billing of BILLING_EVENTS) {
+    const customer = CUSTOMERS.find((c) => c.id === billing.customerId)
+
+    if (billing.kind === 'invoice-credit-sale' || billing.kind === 'cash-credit-sale') {
       entries.push({
         id: '',
-        date: lot.purchaseDate,
-        customerId: lot.customerId,
+        date: billing.date,
+        customerId: billing.customerId,
         kind: 'credit-sale',
-        description: `Prepaid credit purchase — lot ${lot.id}`,
-        debitAccount: 'Cash',
-        debitAmount: lot.originalCredits,
+        description: billing.description,
+        debitAccount: billing.kind === 'cash-credit-sale' ? 'Cash' : 'Accounts Receivable',
+        debitAmount: billing.amount,
         creditAccount: 'Contract Liability',
-        creditAmount: lot.originalCredits,
-        status: lot.customerId === 'meridian' ? 'pending' : 'posted',
-        walletLotId: lot.id,
+        creditAmount: billing.amount,
+        status: 'posted',
+        walletLotId: billing.walletLotId,
         contractId: customer?.contractId,
-        auditTrail: [
-          'Payment settled and confirmed by billing',
-          'Wallet lot provisioned with prepaid balance',
-          lot.customerId === 'meridian'
-            ? 'Held pending resolution of related wallet exception'
-            : 'Posted to general ledger',
-        ],
+        auditTrail:
+          billing.kind === 'cash-credit-sale'
+            ? ['Payment settled and confirmed by billing', 'Wallet lot provisioned with prepaid balance', 'Posted to general ledger']
+            : ['Invoice issued, Net 30 terms', 'Wallet lot provisioned with prepaid balance', 'Posted to general ledger — cash collection tracked separately in AR'],
+      })
+    }
+
+    // Note: 'invoice-usage' billing events intentionally do not generate a
+    // journal entry — for pay-as-you-go usage, revenue and the receivable
+    // are already booked by the usage-recognition entry above at the moment
+    // of consumption. The invoice merely formalizes that existing
+    // receivable for the customer; booking a second entry here would
+    // double-count both revenue and AR.
+
+    if (billing.kind === 'collection') {
+      entries.push({
+        id: '',
+        date: billing.date,
+        customerId: billing.customerId,
+        kind: 'collection',
+        description: billing.description,
+        debitAccount: 'Cash',
+        debitAmount: billing.amount,
+        creditAccount: 'Accounts Receivable',
+        creditAmount: billing.amount,
+        status: 'posted',
+        contractId: customer?.contractId,
+        auditTrail: ['Payment received and matched to open invoice', 'Accounts receivable balance cleared', 'Posted to general ledger'],
+      })
+    }
+
+    if (billing.kind === 'refund') {
+      entries.push({
+        id: '',
+        date: billing.date,
+        customerId: billing.customerId,
+        kind: 'refund',
+        description: billing.description,
+        debitAccount: 'Contract Liability',
+        debitAmount: billing.amount,
+        creditAccount: 'Cash',
+        creditAmount: billing.amount,
+        status: 'posted',
+        walletLotId: billing.walletLotId,
+        contractId: customer?.contractId,
+        auditTrail: ['Refund approved by Controller', 'Contract liability reduced for unconsumed prepaid balance', 'Posted to general ledger'],
       })
     }
   }
 
-  for (const refund of REFUNDS) {
-    const customer = CUSTOMERS.find((c) => c.id === refund.customerId)
-    entries.push({
-      id: '',
-      date: refund.date,
-      customerId: refund.customerId,
-      kind: 'refund',
-      description: `Refund — ${refund.reason}`,
-      debitAccount: 'Contract Liability',
-      debitAmount: refund.amount,
-      creditAccount: 'Cash',
-      creditAmount: refund.amount,
-      status: 'posted',
-      walletLotId: refund.walletLotId,
-      contractId: customer?.contractId,
-      auditTrail: [
-        'Refund approved by Controller',
-        'Contract liability reduced for unconsumed prepaid balance',
-        'Posted to general ledger',
-      ],
-    })
-  }
-
   for (const lot of WALLET_LOTS) {
+    const customer = CUSTOMERS.find((c) => c.id === lot.customerId)
+
+    if (lot.source === 'promotional' && isAugust(lot.issueDate)) {
+      entries.push({
+        id: '',
+        date: lot.issueDate,
+        customerId: lot.customerId,
+        kind: 'promotional-grant',
+        description: `Promotional credit grant — lot ${lot.id} (marketing incentive, no cash)`,
+        debitAccount: 'Marketing Expense',
+        debitAmount: lot.originalCredits,
+        creditAccount: 'Contract Liability',
+        creditAmount: lot.originalCredits,
+        status: 'posted',
+        walletLotId: lot.id,
+        contractId: customer?.contractId,
+        auditTrail: [
+          'Promotional credits granted per marketing agreement',
+          'Tracked in a separate promotional lot from paid balances',
+          'Posted to general ledger',
+        ],
+      })
+    }
+
     if (lot.breakageAmount && lot.breakageDate) {
-      const customer = CUSTOMERS.find((c) => c.id === lot.customerId)
       entries.push({
         id: '',
         date: lot.breakageDate,
@@ -344,8 +455,32 @@ export function buildJournalEntries(): JournalEntry[] {
         contractId: customer?.contractId,
         auditTrail: [
           'Lot reached contractual expiration with unused balance',
-          'Breakage estimate reassessed against historical redemption pattern',
+          'Limited historical redemption data — recognized via the remote method at expiration rather than proportionally',
           'Posted to general ledger per ASC 606-10-55-46',
+        ],
+      })
+    }
+
+    if (lot.remittanceAmount && lot.remittanceDate) {
+      entries.push({
+        id: '',
+        date: lot.remittanceDate,
+        customerId: lot.customerId,
+        kind: 'remittance-reclass',
+        description: `Unused balance reclassified to remittance liability at expiration (lot ${lot.id})`,
+        debitAccount: 'Contract Liability',
+        debitAmount: lot.remittanceAmount,
+        creditAccount: 'Remittance Liability',
+        creditAmount: lot.remittanceAmount,
+        status: lot.remittanceStatus === 'remitted' ? 'posted' : 'pending',
+        walletLotId: lot.id,
+        contractId: customer?.contractId,
+        auditTrail: [
+          'Lot reached contractual expiration with unused balance',
+          'Ireland entity — unclaimed-property rules require remittance rather than breakage revenue',
+          lot.remittanceStatus === 'remitted'
+            ? 'Remitted to the relevant authority — posted to general ledger'
+            : 'Pending legal review before remittance is filed',
         ],
       })
     }
@@ -358,45 +493,44 @@ export function buildJournalEntries(): JournalEntry[] {
 export const ACCOUNTING_EXCEPTIONS: AccountingException[] = [
   {
     id: 'EX-001',
-    type: 'Negative wallet balance',
-    customerId: 'meridian',
+    type: 'Usage without contract',
+    customerId: 'argon',
     severity: 'high',
     status: 'open',
     detail:
-      'Wallet lot WL-8001 went to a −$15,000 balance after the Aug 12 usage event posted against only $25,000 of remaining credits.',
-    suggestedAction:
-      'Reverse the overdraw, issue a $15,000 true-up invoice, and pause further usage until the customer tops up.',
-    relatedWalletLotId: 'WL-8001',
+      'The Aug 12 usage event ($3,100) was ingested and revenue was recognized before the pay-as-you-go contract was countersigned on Aug 14.',
+    suggestedAction: 'Confirm the executed contract covers the Aug 12 usage retroactively before releasing the entry to the GL.',
   },
   {
     id: 'EX-002',
-    type: 'Revenue exceeds available credits',
-    customerId: 'meridian',
-    severity: 'high',
+    type: 'Remittance liability pending legal review',
+    customerId: 'lumen',
+    severity: 'medium',
     status: 'in-review',
     detail:
-      'Journal entry JE for the Aug 12 usage event recognized $40,000 of revenue against a wallet with only $25,000 available at the time.',
-    suggestedAction: 'Confirm recognition treatment with the Controller before month-end close.',
+      'Wallet lot WL-L2 expired Aug 1 with a $31,000 unused balance. Because the contract is routed through the Ireland entity, unclaimed-property rules may require remittance instead of breakage revenue.',
+    suggestedAction: 'Confirm the applicable jurisdiction and remittance timeline with legal/tax before filing.',
+    relatedWalletLotId: 'WL-L2',
   },
   {
     id: 'EX-003',
-    type: 'Promotional credits incorrectly mapped',
-    customerId: 'clay',
+    type: 'Promotional credits posted to standard revenue account',
+    customerId: 'cascade',
     severity: 'medium',
     status: 'open',
     detail:
-      'Promotional credit lot WL-4001 is posting to the standard Usage Revenue account instead of the promotional revenue sub-account.',
-    suggestedAction: 'Reclassify the $3,100 recognized in August to the promotional revenue sub-account.',
-    relatedWalletLotId: 'WL-4001',
+      'Promotional credit lot WL-C2 is posting to the standard Usage Revenue account instead of a promotional revenue sub-account.',
+    suggestedAction: 'Reclassify the $4,500 recognized in August to the promotional revenue sub-account.',
+    relatedWalletLotId: 'WL-C2',
   },
   {
     id: 'EX-004',
-    type: 'Wallet credits expired',
-    customerId: 'perplexity',
+    type: 'Breakage recognized at expiration',
+    customerId: 'northwind',
     severity: 'low',
     status: 'resolved',
-    detail: '$42,000 of unused credits on lot WL-6001 expired Aug 1 and were recognized as breakage per policy.',
+    detail: '$18,000 of unused credits on lot WL-N2 expired Aug 1 and were recognized as breakage via the remote method.',
     suggestedAction: 'No further action required — recognized in the August breakage rollforward.',
-    relatedWalletLotId: 'WL-6001',
+    relatedWalletLotId: 'WL-N2',
   },
 ]

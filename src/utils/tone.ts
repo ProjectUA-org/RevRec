@@ -6,7 +6,6 @@ export const LOT_STATUS_LABEL: Record<WalletLotStatus, string> = {
   'expiring-soon': 'Expiring soon',
   expired: 'Expired',
   depleted: 'Depleted',
-  exception: 'Exception',
 }
 
 export const LOT_STATUS_TONE: Record<WalletLotStatus, TagTone> = {
@@ -14,7 +13,6 @@ export const LOT_STATUS_TONE: Record<WalletLotStatus, TagTone> = {
   'expiring-soon': 'mismatch',
   expired: 'neutral',
   depleted: 'neutral',
-  exception: 'gap',
 }
 
 export const JE_STATUS_LABEL: Record<JournalEntryStatus, string> = {

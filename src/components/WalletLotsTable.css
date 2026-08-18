@@ -1,13 +1,47 @@
 @import './Table.css';
 
-.wallet-lots-table__negative {
-  color: var(--status-gap);
-  font-weight: 700;
-}
-
 .wallet-lots-table__source {
   font-size: 0.72rem;
   color: var(--text-muted);
   font-weight: 400;
   margin-top: 2px;
+}
+
+table.wallet-lots-table {
+  table-layout: fixed;
+}
+
+.wallet-lots-table th:nth-child(1),
+.wallet-lots-table td:nth-child(1) {
+  width: 15%;
+}
+
+.wallet-lots-table th:nth-child(2),
+.wallet-lots-table td:nth-child(2) {
+  width: 13%;
+}
+
+.wallet-lots-table th:nth-child(3),
+.wallet-lots-table td:nth-child(3) {
+  width: 13%;
+}
+
+.wallet-lots-table th:nth-child(4),
+.wallet-lots-table td:nth-child(4) {
+  width: 16%;
+}
+
+.wallet-lots-table th:nth-child(5),
+.wallet-lots-table td:nth-child(5) {
+  width: 16%;
+}
+
+.wallet-lots-table th:nth-child(6),
+.wallet-lots-table td:nth-child(6) {
+  width: 13%;
+}
+
+.wallet-lots-table th:nth-child(7),
+.wallet-lots-table td:nth-child(7) {
+  width: 14%;
 }

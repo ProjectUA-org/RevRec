@@ -32,6 +32,10 @@ export function formatTokens(value: number): string {
   return String(value)
 }
 
+export function formatUnits(value: number, unitLabel: string): string {
+  return `${formatTokens(value)} ${unitLabel}`
+}
+
 export function formatDate(date: string): string {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(
     new Date(`${date}T00:00:00`),

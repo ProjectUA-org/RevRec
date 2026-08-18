@@ -75,7 +75,7 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
                             <h4>Source usage event</h4>
                             {sourceEvent ? (
                               <p>
-                                {sourceEvent.id} — {sourceEvent.model}, {formatDateTime(sourceEvent.timestamp)}
+                                {sourceEvent.id} — {sourceEvent.product}, {formatDateTime(sourceEvent.timestamp)}
                               </p>
                             ) : (
                               <p className="journal-entries-table__muted">

@@ -1,0 +1,53 @@
+@import './Table.css';
+
+.contract-policy-table__contract-id {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+table.contract-policy-table {
+  table-layout: fixed;
+}
+
+.contract-policy-table th:nth-child(1),
+.contract-policy-table td:nth-child(1) {
+  width: 15%;
+}
+
+.contract-policy-table th:nth-child(2),
+.contract-policy-table td:nth-child(2) {
+  width: 18%;
+}
+
+.contract-policy-table th:nth-child(3),
+.contract-policy-table td:nth-child(3) {
+  width: 13%;
+}
+
+.contract-policy-table th:nth-child(4),
+.contract-policy-table td:nth-child(4) {
+  width: 13%;
+}
+
+.contract-policy-table th:nth-child(5),
+.contract-policy-table td:nth-child(5) {
+  width: 24%;
+}
+
+.contract-policy-table th:nth-child(6),
+.contract-policy-table td:nth-child(6) {
+  width: 9%;
+}
+
+.contract-policy-table th:nth-child(7),
+.contract-policy-table td:nth-child(7) {
+  width: 8%;
+}
+
+.contract-policy-table td:nth-child(2),
+.contract-policy-table td:nth-child(5) {
+  white-space: normal;
+  line-height: 1.4;
+}

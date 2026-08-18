@@ -1,5 +1,44 @@
 @import './Table.css';
 
+table.usage-events-table {
+  table-layout: fixed;
+}
+
+.usage-events-table th:nth-child(1),
+.usage-events-table td:nth-child(1) {
+  width: 13%;
+}
+
+.usage-events-table th:nth-child(2),
+.usage-events-table td:nth-child(2) {
+  width: 14%;
+}
+
+.usage-events-table th:nth-child(3),
+.usage-events-table td:nth-child(3) {
+  width: 13%;
+}
+
+.usage-events-table th:nth-child(4),
+.usage-events-table td:nth-child(4) {
+  width: 14%;
+}
+
+.usage-events-table th:nth-child(5),
+.usage-events-table td:nth-child(5) {
+  width: 14%;
+}
+
+.usage-events-table th:nth-child(6),
+.usage-events-table td:nth-child(6) {
+  width: 16%;
+}
+
+.usage-events-table th:nth-child(7),
+.usage-events-table td:nth-child(7) {
+  width: 16%;
+}
+
 .usage-events-table__toolbar {
   display: flex;
   align-items: center;
