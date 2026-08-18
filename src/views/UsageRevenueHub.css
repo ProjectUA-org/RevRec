@@ -1,0 +1,30 @@
+.usage-revenue-hub h1 {
+  font-size: 1.4rem;
+  margin: 0 0 6px;
+}
+
+.usage-revenue-hub__subtitle {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.usage-revenue-hub h2 {
+  font-size: 1.05rem;
+  margin: 0 0 12px;
+}
+
+.usage-revenue-hub__cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.usage-revenue-hub__cards > * {
+  min-width: 200px;
+}
+
+.usage-revenue-hub__section {
+  margin-bottom: 28px;
+}

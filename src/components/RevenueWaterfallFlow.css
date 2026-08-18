@@ -1,0 +1,88 @@
+.revenue-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 16px 20px;
+  overflow-x: auto;
+}
+
+.revenue-flow__stage {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.revenue-flow__card {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.revenue-flow__bar-track {
+  width: 100%;
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 12px;
+}
+
+.revenue-flow__bar {
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  background: linear-gradient(180deg, var(--status-info) 0%, var(--status-matched) 100%);
+  transition: height 0.4s ease-out;
+  min-height: 4px;
+}
+
+.revenue-flow__label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.revenue-flow__value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.revenue-flow__caption {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.revenue-flow__arrow {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  padding: 0 4px;
+  align-self: center;
+  margin-top: -40px;
+}
+
+@media (max-width: 900px) {
+  .revenue-flow {
+    flex-direction: column;
+  }
+
+  .revenue-flow__stage {
+    flex-direction: column;
+  }
+
+  .revenue-flow__arrow {
+    transform: rotate(90deg);
+    margin-top: 0;
+  }
+}

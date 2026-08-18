@@ -1,0 +1,13 @@
+@import './Table.css';
+
+.wallet-lots-table__negative {
+  color: var(--status-gap);
+  font-weight: 700;
+}
+
+.wallet-lots-table__source {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}

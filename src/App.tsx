@@ -2,10 +2,12 @@ import { useState } from 'react'
 import './App.css'
 import { RevenueReconciliation } from './views/RevenueReconciliation'
 import { ProfitAndLoss } from './views/ProfitAndLoss'
+import { UsageRevenueHub } from './views/UsageRevenueHub'
 
 const TABS = [
   { id: 'reconciliation', label: 'Revenue Reconciliation' },
   { id: 'pnl', label: 'P&L' },
+  { id: 'usage-revenue-hub', label: 'Usage Revenue Hub' },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -30,6 +32,7 @@ function App() {
 
       {activeTab === 'reconciliation' && <RevenueReconciliation />}
       {activeTab === 'pnl' && <ProfitAndLoss />}
+      {activeTab === 'usage-revenue-hub' && <UsageRevenueHub />}
     </div>
   )
 }

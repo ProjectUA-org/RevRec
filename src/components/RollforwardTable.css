@@ -1,0 +1,13 @@
+@import './Table.css';
+
+.rollforward-table td:first-child {
+  color: var(--text-muted);
+}
+
+.rollforward-table__total td {
+  border-top: 2px solid var(--text);
+  border-bottom: none;
+  font-weight: 700;
+  color: var(--text);
+  padding-top: 12px;
+}

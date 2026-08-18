@@ -14,6 +14,11 @@
   --status-mismatch-bg: #fdf1dc;
   --status-gap: #b3261e;
   --status-gap-bg: #fbe9e7;
+
+  --status-info: #1a56b3;
+  --status-info-bg: #e8f0fd;
+  --status-neutral: #55565f;
+  --status-neutral-bg: #ebebef;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,6 +35,11 @@
     --status-mismatch-bg: rgba(251, 191, 36, 0.14);
     --status-gap: #f87171;
     --status-gap-bg: rgba(248, 113, 113, 0.14);
+
+    --status-info: #60a5fa;
+    --status-info-bg: rgba(96, 165, 250, 0.14);
+    --status-neutral: #a8a9b3;
+    --status-neutral-bg: rgba(168, 169, 179, 0.14);
   }
 }
 

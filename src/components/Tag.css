@@ -1,0 +1,35 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.tag--matched {
+  color: var(--status-matched);
+  background: var(--status-matched-bg);
+}
+
+.tag--mismatch {
+  color: var(--status-mismatch);
+  background: var(--status-mismatch-bg);
+}
+
+.tag--gap {
+  color: var(--status-gap);
+  background: var(--status-gap-bg);
+}
+
+.tag--info {
+  color: var(--status-info);
+  background: var(--status-info-bg);
+}
+
+.tag--neutral {
+  color: var(--status-neutral);
+  background: var(--status-neutral-bg);
+}

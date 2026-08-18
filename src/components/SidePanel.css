@@ -1,0 +1,131 @@
+.side-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 24, 0.35);
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  animation: side-panel-fade-in 0.15s ease-out;
+}
+
+@keyframes side-panel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.side-panel {
+  width: min(420px, 100%);
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  animation: side-panel-slide-in 0.2s ease-out;
+}
+
+@keyframes side-panel-slide-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.side-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+
+.side-panel__header h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+.side-panel__subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.side-panel__close {
+  appearance: none;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.side-panel__close:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.side-panel__body {
+  padding: 20px;
+}
+
+.side-panel__section {
+  margin-bottom: 20px;
+}
+
+.side-panel__section:last-child {
+  margin-bottom: 0;
+}
+
+.side-panel__section h4 {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.side-panel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.side-panel__row:last-child {
+  border-bottom: none;
+}
+
+.side-panel__row-label {
+  color: var(--text-muted);
+}
+
+.side-panel__row-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.side-panel__explanation {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
