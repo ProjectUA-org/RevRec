@@ -16,7 +16,11 @@ export function ExceptionsPanel({ exceptions }: { exceptions: AccountingExceptio
             </div>
             <div className="exceptions-panel__tags">
               <Tag label={SEVERITY_LABEL[exception.severity]} tone={SEVERITY_TONE[exception.severity]} />
-              <Tag label={EXCEPTION_STATUS_LABEL[exception.status]} tone={EXCEPTION_STATUS_TONE[exception.status]} />
+              <Tag
+                label={EXCEPTION_STATUS_LABEL[exception.status]}
+                tone={EXCEPTION_STATUS_TONE[exception.status]}
+                variant="dot"
+              />
             </div>
           </div>
           <p className="exceptions-panel__detail">{exception.detail}</p>

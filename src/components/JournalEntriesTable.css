@@ -8,6 +8,7 @@
   cursor: pointer;
 }
 
+.journal-entries-table td:nth-child(2),
 .journal-entries-table td:nth-child(3) {
   white-space: normal;
   line-height: 1.4;

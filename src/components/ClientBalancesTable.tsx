@@ -73,6 +73,7 @@ export function ClientBalancesTable({
                     <Tag
                       label={balance?.needsAttention ? 'Attention needed' : 'Good standing'}
                       tone={balance?.needsAttention ? 'gap' : 'matched'}
+                      variant="dot"
                     />
                   </td>
                   <td className="client-balances-table__chevron">{isExpanded ? '▾' : '▸'}</td>

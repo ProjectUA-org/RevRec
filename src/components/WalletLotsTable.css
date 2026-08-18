@@ -10,3 +10,9 @@
 table.wallet-lots-table {
   table-layout: fixed;
 }
+
+.wallet-lots-table td:nth-child(1),
+.wallet-lots-table td:nth-child(7) {
+  white-space: normal;
+  line-height: 1.4;
+}

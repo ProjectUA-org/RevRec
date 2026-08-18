@@ -59,7 +59,7 @@ export function WalletLotsTable({ lots }: { lots: WalletLot[] }) {
                 <td className="numeric">{formatCredits(lot.remainingCredits)}</td>
                 <td>{formatDate(lot.expiration)}</td>
                 <td>
-                  <Tag label={LOT_STATUS_LABEL[lot.status]} tone={LOT_STATUS_TONE[lot.status]} />
+                  <Tag label={LOT_STATUS_LABEL[lot.status]} tone={LOT_STATUS_TONE[lot.status]} variant="dot" />
                   {note && <div className="wallet-lots-table__source">{note}</div>}
                 </td>
               </tr>

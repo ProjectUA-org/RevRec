@@ -1,5 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/*
+ * Rillet-inspired palette, scoped entirely to this tab (via variable
+ * overrides + descendant selectors) so Revenue Reconciliation and P&L keep
+ * their original look untouched. Shared components (SummaryCard, Tag,
+ * Table.css, Modal) pick these up automatically since they're already
+ * built on the same CSS custom properties.
+ */
+.usage-revenue-hub {
+  --surface: #ffffff;
+  --surface-muted: #f6f5fb;
+  --border: #ebeaf2;
+  --text: #16151f;
+  --text-muted: #6b6a78;
+
+  --status-matched: #1f9d6c;
+  --status-matched-bg: #e7f7ef;
+  --status-mismatch: #b8790a;
+  --status-mismatch-bg: #fdf3e0;
+  --status-gap: #d6483f;
+  --status-gap-bg: #fbeae8;
+  --status-info: #4b39c8;
+  --status-info-bg: #eeecfb;
+  --status-neutral: #6b6a78;
+  --status-neutral-bg: #ececf1;
+
+  --rillet-accent: #4b39c8;
+  --rillet-accent-soft: #eeecfb;
+  --rillet-shadow: 0 1px 2px rgba(22, 21, 31, 0.04), 0 8px 24px rgba(22, 21, 31, 0.06);
+
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  .usage-revenue-hub {
+    --surface: #1c1b26;
+    --surface-muted: #232230;
+    --border: #322f42;
+    --text: #eeeef5;
+    --text-muted: #a3a1b0;
+
+    --status-matched: #4ade80;
+    --status-matched-bg: rgba(74, 222, 128, 0.14);
+    --status-mismatch: #fbbf24;
+    --status-mismatch-bg: rgba(251, 191, 36, 0.14);
+    --status-gap: #f2726a;
+    --status-gap-bg: rgba(242, 114, 106, 0.14);
+    --status-info: #8b7cf0;
+    --status-info-bg: rgba(139, 124, 240, 0.16);
+    --status-neutral: #a3a1b0;
+    --status-neutral-bg: rgba(163, 161, 176, 0.14);
+
+    --rillet-accent: #8b7cf0;
+    --rillet-accent-soft: rgba(139, 124, 240, 0.16);
+    --rillet-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.28);
+  }
+}
+
+.usage-revenue-hub h1,
+.usage-revenue-hub h2,
+.usage-revenue-hub h3 {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
 .usage-revenue-hub h1 {
-  font-size: 1.4rem;
+  font-size: 1.6rem;
+  font-weight: 700;
   margin: 0 0 6px;
 }
 
@@ -10,8 +77,16 @@
 }
 
 .usage-revenue-hub h2 {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
+  font-weight: 600;
   margin: 0 0 6px;
+}
+
+.usage-revenue-hub h3 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: var(--text-muted);
 }
 
 .usage-revenue-hub__cards {
@@ -35,4 +110,74 @@
   font-size: 0.85rem;
   line-height: 1.55;
   max-width: 780px;
+}
+
+/* Cards & tables: soft shadow instead of a hard border, generous radius */
+
+.usage-revenue-hub .summary-card {
+  border-radius: 16px;
+  border-color: var(--border);
+  box-shadow: var(--rillet-shadow);
+}
+
+.usage-revenue-hub .summary-card__label {
+  font-weight: 500;
+}
+
+.usage-revenue-hub .summary-card__value {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.usage-revenue-hub .table-card {
+  border-radius: 16px;
+  border-color: var(--border);
+  box-shadow: var(--rillet-shadow);
+}
+
+.usage-revenue-hub .table-card th {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  font-size: 0.82rem;
+}
+
+.usage-revenue-hub .table-card td {
+  font-size: 0.88rem;
+}
+
+/* Pills: soften to match Rillet's lighter, smaller category badges */
+
+.usage-revenue-hub .tag {
+  font-weight: 500;
+  padding: 3px 11px;
+}
+
+/* Exception cards: same soft-shadow treatment as the tables above */
+
+.usage-revenue-hub .exceptions-panel__card {
+  border-radius: 14px;
+  box-shadow: var(--rillet-shadow);
+}
+
+.usage-revenue-hub .exceptions-panel__action {
+  border-radius: 10px;
+}
+
+/* Explain-with-AI button: accent-colored to match Rillet's toggle/CTA hue */
+
+.usage-revenue-hub .journal-entries-table__explain {
+  color: var(--rillet-accent);
+  border-color: var(--rillet-accent-soft);
+  background: var(--rillet-accent-soft);
+}
+
+.usage-revenue-hub .journal-entries-table__explain:hover {
+  background: var(--rillet-accent);
+  border-color: var(--rillet-accent);
+  color: #ffffff;
+}
+
+.usage-revenue-hub .modal__header h3 {
+  color: var(--text);
 }

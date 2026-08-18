@@ -17,12 +17,12 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
     <div className="table-card">
       <table className="journal-entries-table">
         <colgroup>
-          <col style={{ width: '110px' }} />
           <col style={{ width: '130px' }} />
-          <col style={{ width: '200px' }} />
+          <col style={{ width: '130px' }} />
+          <col style={{ width: '165px' }} />
           <col style={{ width: '175px' }} />
           <col style={{ width: '175px' }} />
-          <col style={{ width: '110px' }} />
+          <col style={{ width: '125px' }} />
           <col style={{ width: '156px' }} />
         </colgroup>
         <thead>
@@ -60,7 +60,7 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
                     {formatCurrency(entry.creditAmount)}
                   </td>
                   <td>
-                    <Tag label={JE_STATUS_LABEL[entry.status]} tone={JE_STATUS_TONE[entry.status]} />
+                    <Tag label={JE_STATUS_LABEL[entry.status]} tone={JE_STATUS_TONE[entry.status]} variant="dot" />
                   </td>
                   <td>
                     <button

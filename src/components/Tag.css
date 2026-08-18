@@ -33,3 +33,40 @@
   color: var(--status-neutral);
   background: var(--status-neutral-bg);
 }
+
+.tag-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.tag-dot__marker {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.tag-dot--matched .tag-dot__marker {
+  background: var(--status-matched);
+}
+
+.tag-dot--mismatch .tag-dot__marker {
+  background: var(--status-mismatch);
+}
+
+.tag-dot--gap .tag-dot__marker {
+  background: var(--status-gap);
+}
+
+.tag-dot--info .tag-dot__marker {
+  background: var(--status-info);
+}
+
+.tag-dot--neutral .tag-dot__marker {
+  background: var(--status-neutral);
+}
