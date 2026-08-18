@@ -17,9 +17,9 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
     <div className="table-card">
       <table className="journal-entries-table">
         <colgroup>
+          <col style={{ width: '127px' }} />
           <col style={{ width: '130px' }} />
-          <col style={{ width: '130px' }} />
-          <col style={{ width: '165px' }} />
+          <col style={{ width: '155px' }} />
           <col style={{ width: '175px' }} />
           <col style={{ width: '175px' }} />
           <col style={{ width: '125px' }} />

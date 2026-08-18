@@ -29,11 +29,11 @@ export function ClientBalancesTable({
       <table className="client-balances-table">
         <colgroup>
           <col style={{ width: '250px' }} />
-          <col style={{ width: '170px' }} />
+          <col style={{ width: '168px' }} />
           <col style={{ width: '210px' }} />
           <col style={{ width: '210px' }} />
-          <col style={{ width: '210px' }} />
-          <col style={{ width: '48px' }} />
+          <col style={{ width: '200px' }} />
+          <col style={{ width: '60px' }} />
         </colgroup>
         <thead>
           <tr>
@@ -80,7 +80,14 @@ export function ClientBalancesTable({
                       variant="dot"
                     />
                   </td>
-                  <td className="client-balances-table__chevron">{isExpanded ? '▾' : '▸'}</td>
+                  <td className="client-balances-table__chevron">
+                    <span
+                      className={`client-balances-table__chevron-icon${isExpanded ? ' client-balances-table__chevron-icon--open' : ''}`}
+                      aria-hidden="true"
+                    >
+                      ▸
+                    </span>
+                  </td>
                 </tr>
                 {isExpanded && (
                   <tr className="client-balances-table__detail-row">

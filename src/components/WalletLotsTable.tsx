@@ -25,8 +25,8 @@ export function WalletLotsTable({ lots }: { lots: WalletLot[] }) {
     <div className="table-card">
       <table className="wallet-lots-table">
         <colgroup>
-          <col style={{ width: '160px' }} />
-          <col style={{ width: '140px' }} />
+          <col style={{ width: '150px' }} />
+          <col style={{ width: '137px' }} />
           <col style={{ width: '150px' }} />
           <col style={{ width: '150px' }} />
           <col style={{ width: '150px' }} />

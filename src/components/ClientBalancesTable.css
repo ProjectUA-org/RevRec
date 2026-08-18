@@ -17,7 +17,29 @@ table.client-balances-table {
 
 .client-balances-table__chevron {
   text-align: center;
-  color: var(--text-muted);
+}
+
+.client-balances-table__chevron-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--rillet-accent-soft);
+  color: var(--rillet-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: transform 0.15s ease-out, background-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.client-balances-table__row:hover .client-balances-table__chevron-icon {
+  background: var(--rillet-accent);
+  color: #ffffff;
+}
+
+.client-balances-table__chevron-icon--open {
+  transform: rotate(90deg);
 }
 
 .client-balances-table__detail-row > td {
@@ -26,9 +48,15 @@ table.client-balances-table {
 }
 
 .client-balances-table__detail {
-  padding: 18px 20px;
+  padding: 18px 20px 18px 32px;
+  border-left: 3px solid var(--rillet-accent-soft);
   background: var(--surface-muted);
   animation: client-balances-detail-in 0.15s ease-out;
+  /* Table.css sets white-space: nowrap on the wrapping <td>, which is an
+     inherited property — reset it here so plain text (e.g. the exception
+     cards' paragraphs) wraps normally. Nested tables re-assert nowrap on
+     their own th/td as needed, so they're unaffected by this reset. */
+  white-space: normal;
 }
 
 @keyframes client-balances-detail-in {
