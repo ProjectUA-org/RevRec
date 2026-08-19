@@ -62,22 +62,21 @@ export function explainJournalEntry(entry: JournalEntry): string {
 
   if (entry.kind === 'promotional-grant') {
     return (
-      `OpenAI granted ${customerName} ${formatCredits(entry.debitAmount)} in promotional credits on ` +
-      `${formatDate(entry.date)} as a marketing incentive, with no cash changing hands. The grant is tracked in a ` +
-      `wallet lot separate from paid balances since it may carry different revenue treatment. The entry debits ` +
-      `${entry.debitAccount} and credits ${entry.creditAccount} for ${formatCurrency(entry.creditAmount)} — the ` +
-      `credits become revenue only as ${customerName} consumes them, exactly like a paid lot.`
+      `OpenAI granted ${customerName} promotional credits as part of a marketing program. Promotional credits are ` +
+      `tracked separately from purchased credits because their accounting may differ depending on the commercial ` +
+      `arrangement and whether they create a material right under ASC 606. In this example, the credits are treated ` +
+      `as a marketing incentive.`
     )
   }
 
   if (entry.kind === 'remittance-reclass') {
     return (
       `The unused balance on wallet lot ${entry.walletLotId ?? 'this lot'} reached its contractual expiration on ` +
-      `${formatDate(entry.date)} without being consumed. Because ${customerName}'s contract is routed through an ` +
-      `Ireland legal entity, unclaimed-property rules may require OpenAI to remit the unused balance to the relevant ` +
-      `authority rather than recognize it as breakage revenue. The entry debits ${entry.debitAccount} and credits ` +
-      `${entry.creditAccount} for ${formatCurrency(entry.debitAmount)}, moving the balance out of the contract ` +
-      `liability and into a remittance liability${entry.status === 'pending' ? ' pending confirmation from legal/tax' : ''}.`
+      `${formatDate(entry.date)} without being consumed. Based on the applicable jurisdiction, the unused balance ` +
+      `may be subject to remittance under local unclaimed property or similar laws rather than recognized as ` +
+      `breakage revenue. The entry debits ${entry.debitAccount} and credits ${entry.creditAccount} for ` +
+      `${formatCurrency(entry.debitAmount)}, moving the balance out of the contract liability and into a remittance ` +
+      `liability${entry.status === 'pending' ? ' pending confirmation from legal/tax' : ''}.`
     )
   }
 

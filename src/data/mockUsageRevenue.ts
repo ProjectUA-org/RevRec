@@ -467,8 +467,7 @@ export const ACCOUNTING_EXCEPTIONS: AccountingException[] = [
     customerId: 'argon',
     severity: 'high',
     status: 'open',
-    detail:
-      'The Aug 12 usage event ($3,100) was ingested and revenue was recognized before the pay-as-you-go contract was countersigned on Aug 14.',
+    detail: 'The Aug 12 usage event ($3,100) was recorded before the pay-as-you-go contract became effective.',
     suggestedAction: 'Confirm the executed contract covers the Aug 12 usage retroactively before releasing the entry to the GL.',
   },
   {
@@ -478,7 +477,7 @@ export const ACCOUNTING_EXCEPTIONS: AccountingException[] = [
     severity: 'medium',
     status: 'in-review',
     detail:
-      'Wallet lot WL-L2 expired Aug 1 with a $31,000 unused balance. Because the contract is routed through the Ireland entity, unclaimed-property rules may require remittance instead of breakage revenue.',
+      'Wallet lot WL-L2 expired Aug 1 with a $31,000 unused balance. Based on the applicable jurisdiction, the unused balance may be subject to remittance under local unclaimed property or similar laws.',
     suggestedAction: 'Confirm the applicable jurisdiction and remittance timeline with legal/tax before filing.',
     relatedWalletLotId: 'WL-L2',
   },
