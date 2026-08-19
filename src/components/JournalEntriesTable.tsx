@@ -18,12 +18,13 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
       <table className="journal-entries-table">
         <colgroup>
           <col style={{ width: '127px' }} />
-          <col style={{ width: '130px' }} />
-          <col style={{ width: '155px' }} />
+          <col style={{ width: '114px' }} />
+          <col style={{ width: '135px' }} />
           <col style={{ width: '175px' }} />
           <col style={{ width: '175px' }} />
           <col style={{ width: '125px' }} />
           <col style={{ width: '156px' }} />
+          <col style={{ width: '36px' }} />
         </colgroup>
         <thead>
           <tr>
@@ -33,6 +34,7 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
             <th className="numeric">Debit</th>
             <th className="numeric">Credit</th>
             <th>Status</th>
+            <th />
             <th />
           </tr>
         </thead>
@@ -74,10 +76,18 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
                       Explain with AI
                     </button>
                   </td>
+                  <td className="journal-entries-table__chevron">
+                    <span
+                      className={`journal-entries-table__chevron-icon${isExpanded ? ' journal-entries-table__chevron-icon--open' : ''}`}
+                      aria-hidden="true"
+                    >
+                      ▸
+                    </span>
+                  </td>
                 </tr>
                 {isExpanded && (
                   <tr className="journal-entries-table__detail-row">
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                       <div className="journal-entries-table__detail">
                         <div className="journal-entries-table__detail-grid">
                           <div>
@@ -100,11 +110,6 @@ export function JournalEntriesTable({ entries }: { entries: JournalEntry[] }) {
                             <h4>Wallet lot</h4>
                             <p>{lot ? `${lot.id} (${formatCurrency(lot.remainingCredits)} remaining)` : '—'}</p>
                           </div>
-                        </div>
-
-                        <div className="journal-entries-table__explanation">
-                          <h4>Revenue recognition explanation</h4>
-                          <p>{explainJournalEntry(entry)}</p>
                         </div>
 
                         <div>

@@ -41,6 +41,35 @@
   border-color: var(--text-muted);
 }
 
+.journal-entries-table td.journal-entries-table__chevron {
+  text-align: center;
+  padding-left: 4px;
+  padding-right: 8px;
+}
+
+.journal-entries-table__chevron-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--rillet-accent-soft);
+  color: var(--rillet-accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  transition: transform 0.15s ease-out, background-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.journal-entries-table__row:hover .journal-entries-table__chevron-icon {
+  background: var(--rillet-accent);
+  color: #ffffff;
+}
+
+.journal-entries-table__chevron-icon--open {
+  transform: rotate(90deg);
+}
+
 .journal-entries-table__detail-row > td {
   padding: 0;
   border-bottom: 1px solid var(--border);
@@ -81,18 +110,6 @@
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
   margin-bottom: 16px;
-}
-
-.journal-entries-table__explanation {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  margin-bottom: 16px;
-}
-
-.journal-entries-table__explanation p {
-  line-height: 1.6;
 }
 
 .journal-entries-table__audit-trail {
